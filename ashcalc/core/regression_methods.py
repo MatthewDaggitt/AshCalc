@@ -6,7 +6,7 @@ Created on 2 Jul 2013
 
 from scipy import stats
 
-from volume_calculations.geom import Line
+from core.geom import Line
     
 def calculateSingleLineRegression(xs,ys):
     """ Returns the least squares regression line through the provided coordinates """

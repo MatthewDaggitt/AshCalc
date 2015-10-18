@@ -6,8 +6,8 @@ Created on 15 Jul 2013
 
 import numpy as np
 
-from volume_calculations import regression_methods
-from volume_calculations.model_exp import exponentialModelAnalysis
+from core import regression_methods
+from core.model_exp import exponentialModelAnalysis
 
 def powerLawModelAnalysis(isopachs, proximalLimitKM, distalLimitKM):
     """

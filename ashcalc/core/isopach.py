@@ -7,6 +7,6 @@ import numpy as np
 
 class Isopach(object):
 
-    def __init__(self, sqrtAreaKM, thicknessM):        
-		self.sqrtAreaKM = sqrtAreaKM
-		self.thicknessM = thicknessM
+    def __init__(self, sqrtAreaKM, thicknessM):
+        self.sqrtAreaKM = sqrtAreaKM
+        self.thicknessM = thicknessM

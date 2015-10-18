@@ -6,7 +6,7 @@ Created on 15 Jul 2013
 
 import numpy as np
 
-from volume_calculations import regression_methods
+from core import regression_methods
 
 def exponentialModelAnalysis(isopachs,n):
 	"""

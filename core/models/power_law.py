@@ -7,7 +7,7 @@ Created on 15 Jul 2013
 import numpy as np
 
 from core import regression_methods
-from core.model_exp import exponentialModelAnalysis
+from core.models.exponential import exponentialModelAnalysis
 
 def powerLawModelAnalysis(isopachs, proximalLimitKM, distalLimitKM):
     """

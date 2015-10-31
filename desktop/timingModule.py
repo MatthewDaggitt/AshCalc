@@ -5,7 +5,7 @@ Created on 20 Aug 2013
 '''
 
 from timeit import Timer
-from core.model_wei import weibullModelAnalysis
+from core.models.weibull import weibullModelAnalysis
 from core.isopach import Isopach
 
 def timeFunction(func,args,number):

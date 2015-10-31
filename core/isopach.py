@@ -10,3 +10,6 @@ class Isopach(object):
     def __init__(self, sqrtAreaKM, thicknessM):
         self.sqrtAreaKM = sqrtAreaKM
         self.thicknessM = thicknessM
+
+    def distanceFromVentKM(self):
+    	return self.sqrtAreaKM/np.sqrt(np.pi)

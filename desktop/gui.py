@@ -18,9 +18,9 @@ import numpy as np
 np.seterr(all="ignore")
 
 from core.isopach import Isopach
-from core.model_exp import exponentialModelAnalysis, calculateExponentialSegmentVolume
-from core.model_pow import powerLawModelAnalysis, calculatePowerLawVolume
-from core.model_wei import weibullModelAnalysis, calculateWeibullVolume, calculateTheta
+from core.models.exponential import exponentialModelAnalysis, calculateExponentialSegmentVolume
+from core.models.power_law import powerLawModelAnalysis, calculatePowerLawVolume
+from core.models.weibull import weibullModelAnalysis, calculateWeibullVolume, calculateTheta
 from core import regression_methods
 from desktop.thread_handlers import ThreadHandler
 from desktop.timingModule import createWeibullTimingEstimationFunction
@@ -54,6 +54,8 @@ NUMBER_OF_SF = 6
 
 colours = ["blue","green","red","cyan","magenta"]
 
+IMAGE_DIR = "images/"
+
 ############################
 
 #########Constants##########
@@ -63,12 +65,6 @@ POW = 1
 WEI = 2
 
 SQRT_PI = math.sqrt(math.pi)
-
-############################
-
-######### Current ##########
-
-sqrtAreaUsed = True
 
 ############################
 
@@ -97,13 +93,7 @@ class App(Frame):
         self.calculationFrame.grid(row=0,column=0,sticky="NSW",padx=(10,5),pady=10)
         self.calculationFrame.startCalculationB.bind("<Button-1>",self.startCalculation)
         self.calculationFrame.endCalculationB.configure(state=tkinter.DISABLED)
-                
-        self.optionsFrame = OptionsFrame(self)
-        self.optionsFrame.grid(row=0,column=1,sticky="NESW",padx=(5,10),pady=10)
-        self.optionsSelection = IntVar()
-        self.optionsFrame.ventDistance_Rb.configure(command=self.changeOptionsSelection,variable=self.optionsSelection)
-        self.optionsFrame.sqrtArea_Rb.configure(command=self.changeOptionsSelection,variable=self.optionsSelection)
-        
+   
         self.isopachEntryFrame = IsopachEntryFrame(self,self.estimateWeibullCalculationTime)
         self.isopachEntryFrame.grid(row=1,column=0,columnspan=2,padx=10,sticky="NS",pady=10)
         
@@ -112,11 +102,11 @@ class App(Frame):
         self.modelEntryFrame.weiNumberOfRuns_E.bind("<KeyRelease>",self.estimateWeibullCalculationTime)
         self.modelEntryFrame.weiIterationsPerRun_E.bind("<KeyRelease>",self.estimateWeibullCalculationTime)
         self.estimateWeibullCalculationTime(None)
-        
+
         self.resultsFrame = ResultsFrame(self)
         self.resultsFrame.grid(row=1,column=2,padx=10,sticky="N",pady=10)
-        
-        #self.isopachEntryFrame.loadData([Isopach(0.4,16.25),Isopach(0.2,30.63),Isopach(0.1,58.87),Isopach(0.05,95.75),Isopach(0.02,181.56),Isopach(0.01,275.1)])
+
+        self.isopachEntryFrame.loadData([Isopach(0.4,16.25),Isopach(0.2,30.63),Isopach(0.1,58.87),Isopach(0.05,95.75),Isopach(0.02,181.56),Isopach(0.01,275.1)])
 
         self.pack()
         self.mainloop()
@@ -180,23 +170,6 @@ class App(Frame):
             self.modelEntryFrame.weiEstimatedTime_E.insertNew(roundToSF(est,2))
         except ValueError:
             self.modelEntryFrame.weiEstimatedTime_E.insertNew("N/A")
-
-    def changeOptionsSelection(self):
-        global sqrtAreaUsed
-        
-        value = self.optionsSelection.get()
-        if (value == 1 and sqrtAreaUsed) or (value == 0 and not sqrtAreaUsed):
-            if self.resultsFrame.modelType is not None:
-                message = "Are you sure you want to change the unit of measurement?\nWarning: The current calculation will be lost."
-                result = messagebox.askquestion("Change x variable", message , icon='warning')
-            else:
-                result = "yes"
-                
-            if result == "yes":
-                sqrtAreaUsed = not sqrtAreaUsed
-                self.resultsFrame.clear()
-            else:
-                self.optionsSelection.set(1-value)
                 
 class CalculationFrame(LabelFrame):
     
@@ -209,21 +182,7 @@ class CalculationFrame(LabelFrame):
         self.endCalculationB.grid(row=1,column=0,padx=10,pady=5)
         self.calculationPB = Progressbar(self, mode="indeterminate",length=128)
         self.calculationPB.grid(row=2,column=0,padx=10,pady=5)
-
-class OptionsFrame(LabelFrame):
-    
-    def __init__(self,parent):
-        LabelFrame.__init__(self,parent,text="Options")
-        
-        self.textLabel = Label(self,text="For x in \u222BxT(x)dx:")
-        self.textLabel.grid(row=0,column=0,padx=10,pady=(8,5),sticky="W")
-        self.sqrtArea_Rb = Radiobutton(self,text="use \u221AArea",value=0)
-        self.sqrtArea_Rb.grid(row=1,column=0,sticky="W",padx=10,pady=5)
-        self.ventDistance_Rb = Radiobutton(self,text="use Vent Distance",value=1)
-        self.ventDistance_Rb.grid(row=2,column=0,sticky="W",padx=10,pady=5)
-        createToolTip(self.sqrtArea_Rb,"The standard unit for x in the literature for the integral above.")
-        createToolTip(self.ventDistance_Rb,"An alternative unit for x for the integral above. It has the\nadvantage of the x-axes of graphs being measured in km\nfrom the vent and hence allows you to immediately read off\nwhere changes in thickness occur. The volume estimates are\nindependent of the unit used.\n\nSee the instruction manual for further details.")
-        
+     
 class IsopachEntryFrame(LabelFrame):
     
     def __init__(self,parent,calculationTimeEstimationFunction):
@@ -234,7 +193,7 @@ class IsopachEntryFrame(LabelFrame):
         
         self.buttonWidth = 14
         
-        photo = PhotoImage(file="open_file-icon.gif")
+        photo = PhotoImage(file=IMAGE_DIR + "open_file-icon.gif")
         self.loadFromFileButton = Button(self,image=photo)
         self.loadFromFileButton.grid(row=0,column=0,padx=10,pady=10)
         self.loadFromFileButton.bind("<Button-1>",self.loadFromFile)
@@ -499,14 +458,14 @@ class ModelEntryFrame(LabelFrame):
                                             "float",
                                             strictLowerBound=0,
                                             strictUpperBound=float('inf'))
-            proximalLimitKM /= (SQRT_PI if sqrtAreaUsed else 1)
+            proximalLimitKM /= SQRT_PI
             
             distalLimitKM = validateValue(self.powDistalLimit_E.get(),
                                           "The distal limit of integration must be prox \u2264 x \u2264 \u221E",
                                           "float",
                                           strictLowerBound=proximalLimitKM,
                                           strictUpperBound=float('inf'))
-            distalLimitKM /= (SQRT_PI if sqrtAreaUsed else 1)
+            distalLimitKM /= SQRT_PI
             
             values.extend([proximalLimitKM,distalLimitKM])
             
@@ -524,13 +483,13 @@ class ModelEntryFrame(LabelFrame):
             lambdaLowerBound = validateValue(self.weiLambdaLowerBoundE.get(),
                                              "The lower bound for \u03BB must be a decimal",
                                              "float")
-            lambdaLowerBound /= (SQRT_PI if sqrtAreaUsed else 1)
+            lambdaLowerBound /= SQRT_PI
               
             lambdaUpperBound = validateValue(self.weiLambdaUpperBoundE.get(),
                                              "The upper bound for \u03BB must be greater than the lower bound",
                                              "float",
                                              strictLowerBound=lambdaLowerBound)
-            lambdaUpperBound /= (SQRT_PI if sqrtAreaUsed else 1)
+            lambdaUpperBound /= SQRT_PI
             
             kLowerBound = validateValue(self.weiKLowerBoundE.get(),
                                         "The lower bound for k must be numeric and less than 2",
@@ -609,7 +568,7 @@ class ResultsFrame(LabelFrame):
             self.resultsStatsFrame.loadExpDisplay(resultsDict["numberOfSegments"])
             
         elif modelType == POW:
-            xs = [isopach.sqrtAreaKM/(1 if sqrtAreaUsed else SQRT_PI) for isopach in resultsDict["isopachs"]]
+            xs = [isopach.sqrtAreaKM for isopach in resultsDict["isopachs"]]
             ys = [isopach.thicknessM for isopach in resultsDict["isopachs"]]
             def errorFunction(c,m):
                 thicknessFunction = lambda x : c*(x**(-m))
@@ -624,7 +583,7 @@ class ResultsFrame(LabelFrame):
             self.resultsStatsFrame.loadPowDisplay()
             
         elif modelType == WEI:
-            xs = np.array([isopach.sqrtAreaKM/(1 if sqrtAreaUsed else SQRT_PI) for isopach in resultsDict["isopachs"]])
+            xs = np.array([isopach.sqrtAreaKM for isopach in resultsDict["isopachs"]])
             ys = np.array([isopach.thicknessM for isopach in resultsDict["isopachs"]])
             
             def errorFunction(lamb,k):
@@ -656,14 +615,10 @@ class ResultsFrame(LabelFrame):
         self.graphNotebook.removeFrame(self.errorSurfaceGraphFrame)
         
         thicknessM = [isopach.thicknessM for isopach in self.currentParameters["isopachs"]]
-        if sqrtAreaUsed:
-            sqrtArea = [isopach.distanceFromVentKM*SQRT_PI for isopach in self.currentParameters["isopachs"]]
-            self.modelGraphFrame.plotScatter(sqrtArea,thicknessM,True)
-            self.modelGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
-        else:
-            distanceFromVentKM = [isopach.distanceFromVentKM for isopach in self.currentParameters["isopachs"]]
-            self.modelGraphFrame.plotScatter(distanceFromVentKM,thicknessM,True)
-            self.modelGraphFrame.axes.set_xlabel(r"$distance$ $from$ $vent$ $(km)$")
+        sqrtArea = [isopach.sqrtAreaKM for isopach in self.currentParameters["isopachs"]]
+        self.modelGraphFrame.plotScatter(sqrtArea,thicknessM,True)
+        self.modelGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
+        
         
         if self.modelType == EXP:
             self._updateExp()
@@ -680,26 +635,21 @@ class ResultsFrame(LabelFrame):
         
         self.errorSurfaceFrame.grid_remove()
         
-        startOfIsopachs = min(self.currentParameters["isopachs"],key=lambda i:i.distanceFromVentKM).distanceFromVentKM
-        endOfIsopachs = max(self.currentParameters["isopachs"],key=lambda i:i.distanceFromVentKM).distanceFromVentKM
+        startOfIsopachs = min(self.currentParameters["isopachs"],key=lambda i:i.distanceFromVentKM()).distanceFromVentKM()
+        endOfIsopachs = max(self.currentParameters["isopachs"],key=lambda i:i.distanceFromVentKM()).distanceFromVentKM()
         
         logThickness = [math.log(isopach.thicknessM) for isopach in self.currentParameters["isopachs"]]
-        if sqrtAreaUsed:
-            sqrtArea = [isopach.distanceFromVentKM*SQRT_PI for isopach in self.currentParameters["isopachs"]]
-            self.regressionGraphFrame.plotScatter(sqrtArea,logThickness,False)
-            self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
-            startOfIsopachs *= SQRT_PI
-            endOfIsopachs *= SQRT_PI
-        else:
-            distanceFromVentKM = [isopach.distanceFromVentKM for isopach in self.currentParameters["isopachs"]]
-            self.regressionGraphFrame.plotScatter(distanceFromVentKM,logThickness,False)
-            self.regressionGraphFrame.axes.set_xlabel(r"$distance$ $from$ $vent$ $(km)$")
+        sqrtArea = [isopach.sqrtAreaKM for isopach in self.currentParameters["isopachs"]]
+        self.regressionGraphFrame.plotScatter(sqrtArea,logThickness,False)
+        self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
+        startOfIsopachs *= SQRT_PI
+        endOfIsopachs *= SQRT_PI
         
         for i in range(n):
-            c, m = self.currentParameters["cs"][i], self.currentParameters["ms"][i]/(SQRT_PI if sqrtAreaUsed else 1)
+            c, m = self.currentParameters["cs"][i], self.currentParameters["ms"][i]/SQRT_PI
             
-            startX = self.currentParameters["limits"][i]*(SQRT_PI if sqrtAreaUsed else 1)
-            endX = (self.currentParameters["limits"][i+1]*(SQRT_PI if sqrtAreaUsed else 1) if i != n-1 else 1.5*(endOfIsopachs-startOfIsopachs)+startOfIsopachs)
+            startX = self.currentParameters["limits"][i]*SQRT_PI
+            endX = (self.currentParameters["limits"][i+1]*SQRT_PI if i != n-1 else 1.5*(endOfIsopachs-startOfIsopachs)+startOfIsopachs)
             startY = math.log(c)-m*startX
             endY = math.log(c)-m*endX
             color = colours[i]
@@ -720,19 +670,16 @@ class ResultsFrame(LabelFrame):
         self.errorSurfaceFrame.update("c","m",0.0,5.0,0.0,5.0)
         
         c, m = self.currentParameters["c"], self.currentParameters["m"]
+        c *= SQRT_PI**m
+
+
         logThickness = [math.log(isopach.thicknessM) for isopach in self.currentParameters["isopachs"]]
-        if sqrtAreaUsed:
-            c *= SQRT_PI**m
-            sqrtArea = [isopach.distanceFromVentKM*SQRT_PI for isopach in self.currentParameters["isopachs"]]
-            self.regressionGraphFrame.plotScatter(sqrtArea,logThickness,False)
-            self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
-        else:
-            logDistanceFromVentKM = [math.log(isopach.distanceFromVentKM) for isopach in self.currentParameters["isopachs"]]
-            self.regressionGraphFrame.plotScatter(logDistanceFromVentKM,logThickness,False)
-            self.regressionGraphFrame.axes.set_xlabel(r" $distance$ $from$  $vent(km)$")
-            
-        proxLimit = self.currentParameters["proximalLimitKM"]*(SQRT_PI if sqrtAreaUsed else 1)
-        distLimit = self.currentParameters["distalLimitKM"]*(SQRT_PI if sqrtAreaUsed else 1)
+        sqrtArea = [isopach.sqrtAreaKM for isopach in self.currentParameters["isopachs"]]
+        self.regressionGraphFrame.plotScatter(sqrtArea,logThickness,False)
+        self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
+        
+        proxLimit = self.currentParameters["proximalLimitKM"]*SQRT_PI
+        distLimit = self.currentParameters["distalLimitKM"]*SQRT_PI
         xs = getStaggeredPoints(proxLimit,distLimit,MODEL_PLOTTING_PRECISION)
         ys = [np.log(c)-m*np.log(x) for x in xs]
         self.regressionGraphFrame.plotLine(xs,ys,colours[0])
@@ -748,19 +695,17 @@ class ResultsFrame(LabelFrame):
         
         self.resultsStatsFrame.weiParametersUpdated(self.currentParameters)
         
-        lamb = self.currentParameters["lambda"]*(SQRT_PI if sqrtAreaUsed else 1)
+        lamb = self.currentParameters["lambda"]*SQRT_PI
         k = self.currentParameters["k"]
         theta = self.currentParameters["theta"]
         limits = self.currentParameters["limits"]
         
         self.errorSurfaceFrame.grid(row=1,column=0,columnspan=2,padx=10,pady=5,sticky="EW")
-        if sqrtAreaUsed:
-            self.errorSurfaceFrame.update("\u03BB", "k", limits[0][0]*SQRT_PI, limits[0][1]*SQRT_PI, limits[1][0], limits[1][1])
-        else:
-            self.errorSurfaceFrame.update("\u03BB", "k", limits[0][0], limits[0][1], limits[1][0], limits[1][1])
+        self.errorSurfaceFrame.update("\u03BB", "k", limits[0][0]*SQRT_PI, limits[0][1]*SQRT_PI, limits[1][0], limits[1][1])
         
         startX = 0
-        endX = (self.currentParameters["isopachs"][-1].distanceFromVentKM+50)*(SQRT_PI if sqrtAreaUsed else 1)
+        endX = (self.currentParameters["isopachs"][-1].distanceFromVentKM()+50)*SQRT_PI
+
         xs = getStaggeredPoints(startX,endX,MODEL_PLOTTING_PRECISION)[1:]
         ys = [theta*((x/lamb)**(k-2))*math.exp(-((x/lamb)**k)) for x in xs]
         self.modelGraphFrame.plotFilledLine(xs, ys, colours[0])
@@ -1019,10 +964,10 @@ class ResultsStatsFrame(LabelFrame):
                                         "float",
                                         strictLowerBound=values["segStart"])
             values["segmentNumber"] = self.currentSegment
-            if sqrtAreaUsed:
-                values["m"] *= SQRT_PI
-                values["segStart"] /= SQRT_PI
-                values["segEnd"] /= SQRT_PI
+
+            values["m"] *= SQRT_PI
+            values["segStart"] /= SQRT_PI
+            values["segEnd"] /= SQRT_PI
                 
         elif self.currentType == POW:
             values["c"] = validateValue(self.powCoefficient_E.get(),
@@ -1031,8 +976,8 @@ class ResultsStatsFrame(LabelFrame):
             values["m"] = validateValue(self.powExponent_E.get(),
                                         "exponent, m, must be a number",
                                         "float")
-            if sqrtAreaUsed:
-                values["c"] *= SQRT_PI**-values["m"]
+
+            values["c"] *= SQRT_PI**-values["m"]
                 
         elif self.currentType == WEI:
             values["lambda"] = validateValue(self.weiLambdaE.get(),
@@ -1048,8 +993,8 @@ class ResultsStatsFrame(LabelFrame):
                                         "\u03B8 must be a positive number",
                                         "float",
                                         strictLowerBound=0)
-            if sqrtAreaUsed:
-                values["lambda"] /= SQRT_PI
+            
+            values["lambda"] /= SQRT_PI
                 
         return values
     
@@ -1060,10 +1005,9 @@ class ResultsStatsFrame(LabelFrame):
         start, end = currentParameters["limits"][self.currentSegment], currentParameters["limits"][self.currentSegment+1]
         c, m = currentParameters["cs"][self.currentSegment], currentParameters["ms"][self.currentSegment]
         
-        if sqrtAreaUsed:
-            start *= SQRT_PI
-            end *= SQRT_PI
-            m /= SQRT_PI
+        start *= SQRT_PI
+        end *= SQRT_PI
+        m /= SQRT_PI
             
         startStr, endStr = roundToSF(start,NUMBER_OF_SF), roundToSF(end,NUMBER_OF_SF)
         cStr, mStr = roundToSF(c,NUMBER_OF_SF), roundToSF(m,NUMBER_OF_SF)
@@ -1097,7 +1041,7 @@ class ResultsStatsFrame(LabelFrame):
                 if currentParameters["limits"][i] <= x < currentParameters["limits"][i+1]:
                     return currentParameters["cs"][i]*math.exp(-currentParameters["ms"][i]*x)
                 
-        distanceFromVentKM = [isopach.distanceFromVentKM for isopach in currentParameters["isopachs"]]
+        distanceFromVentKM = [isopach.distanceFromVentKM() for isopach in currentParameters["isopachs"]]
         thicknessM = [isopach.thicknessM for isopach in currentParameters["isopachs"]]
         errorStr = roundToSF(regression_methods.meanRelativeSquaredError(distanceFromVentKM, thicknessM, thicknessFunction),NUMBER_OF_SF)
         self.relativeSquaredError_E.insertNew(errorStr)
@@ -1110,7 +1054,7 @@ class ResultsStatsFrame(LabelFrame):
         c, m = currentParameters["c"], currentParameters["m"] 
         
         thicknessFunction = lambda x : c*(x**(-m))
-        distanceFromVentKM = [isopach.distanceFromVentKM for isopach in currentParameters["isopachs"]]
+        distanceFromVentKM = [isopach.distanceFromVentKM() for isopach in currentParameters["isopachs"]]
         thicknessM = [isopach.thicknessM for isopach in currentParameters["isopachs"]]
         proximalLimitKM = currentParameters["proximalLimitKM"]
         distalLimitKM = currentParameters["distalLimitKM"]
@@ -1121,10 +1065,9 @@ class ResultsStatsFrame(LabelFrame):
         
         volumeStr = roundToSF(calculatePowerLawVolume(c,m,proximalLimitKM,distalLimitKM),NUMBER_OF_SF)
         
-        if sqrtAreaUsed:
-            c *= SQRT_PI**m
-            proximalLimitKM *= SQRT_PI
-            distalLimitKM *= SQRT_PI
+        c *= SQRT_PI**m
+        proximalLimitKM *= SQRT_PI
+        distalLimitKM *= SQRT_PI
             
         coefficientStr = roundToSF(c,NUMBER_OF_SF)
         exponentStr = roundToSF(m,NUMBER_OF_SF)
@@ -1151,13 +1094,12 @@ class ResultsStatsFrame(LabelFrame):
         lamb, k, theta = currentParameters["lambda"], currentParameters["k"], currentParameters["theta"]
         
         thicknessFunction = lambda x : theta*((x/lamb)**(k-2))*math.exp(-((x/lamb)**k))
-        distanceFromVentKM = [isopach.distanceFromVentKM for isopach in currentParameters["isopachs"]]
+        distanceFromVentKM = [isopach.distanceFromVentKM() for isopach in currentParameters["isopachs"]]
         thicknessM = [isopach.thicknessM for isopach in currentParameters["isopachs"]]
         errorStr = roundToSF(regression_methods.meanRelativeSquaredError(distanceFromVentKM, thicknessM, thicknessFunction),NUMBER_OF_SF)
         volumeStr = roundToSF(calculateWeibullVolume(lamb, k, theta),NUMBER_OF_SF)
         
-        if sqrtAreaUsed:
-            lamb *= SQRT_PI
+        lamb *= SQRT_PI
             
         lambdaStr = roundToSF(lamb,NUMBER_OF_SF)
         invLambdaStr = roundToSF(1/lamb,NUMBER_OF_SF)
@@ -1282,8 +1224,8 @@ class GraphFrame(Frame):
         self.canvas = FigureCanvas(self.figure, master=self)
         self.canvas.get_tk_widget().grid(row=0,column=2,sticky="W")
         self.canvas.get_tk_widget().configure(highlightthickness=0)
-        toolbar = CutDownNavigationToolbar(self.canvas,self)
-        toolbar.grid(row=1,column=2,sticky="W")
+        #toolbar = CutDownNavigationToolbar(self.canvas,self)
+        #toolbar.grid(row=1,column=2,sticky="W")
         
         if dim == 2:
             self.axes = self.figure.add_subplot(1,1,1)

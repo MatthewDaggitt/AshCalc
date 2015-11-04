@@ -7,6 +7,13 @@ Created on 19 Aug 2013
 from threading import Thread
 from queue import Queue
 
+from core.models.exponential import exponentialModelAnalysis
+from core.models.power_law import powerLawModelAnalysis
+from core.models.weibull import weibullModelAnalysis
+
+from desktop.settings import Model
+
+
 class ThreadHandler():
     """
     Class for running calculations in a seperate thread
@@ -17,14 +24,22 @@ class ThreadHandler():
         self._currentCalculationType = None
         self._currentResult = None
         
-    def startCalculation(self,function,args,calculationType):
+    def startCalculation(self, calculationType, args):
         """
         Creates a WorkerThread to carry out func(*args). Will cause any
         previous still running calculations to be cancelled
         """
+
+        if calculationType == Model.EXP:
+            function = exponentialModelAnalysis
+        elif calculationType == Model.POW:
+            function = powerLawModelAnalysis
+        elif calculationType == Model.WEI:
+            function = weibullModelAnalysis
+
         self._currentThreadID += 1
         self._currentCalculationType = calculationType
-        newThread = WorkerThread(function,args,self._calculationFinished,self._resultsQueue,self._currentThreadID)
+        newThread = WorkerThread(function, args, self._calculationFinished, self._resultsQueue, self._currentThreadID)
         newThread.setDaemon(True)
         newThread.start()
         
@@ -63,7 +78,7 @@ class ThreadHandler():
 class WorkerThread(Thread):
     """Subclass of Thread that performs the calculation"""
     
-    def __init__(self,function,args,callbackFunction,resultsQueue,threadID):
+    def __init__(self, function, args, callbackFunction, resultsQueue, threadID):
         Thread.__init__(self)
         self.callbackFunction = callbackFunction
         self._resultsQueue = resultsQueue

@@ -38,19 +38,22 @@ def powerLawModelAnalysis(isopachs, proximalLimitKM, distalLimitKM):
     
     logThicknessesM = [np.log(isopach.thicknessM) for isopach in isopachs]
     logSqrtAreaKM = [np.log(isopach.sqrtAreaKM) for isopach in isopachs]
-        
+    
+    proximalLimitSqrtAreaKM = proximalLimitKM*np.sqrt(np.pi)
+    distalLimitSqrtAreaKM = distalLimitKM*np.sqrt(np.pi)
+
     regressionLine = regression_methods.calculateSingleLineRegression(logSqrtAreaKM, logThicknessesM)
     m = -regressionLine.m
     c = np.exp(regressionLine.c)
-    estimatedTotalVolume = calculatePowerLawVolume(c,m,proximalLimitKM,distalLimitKM)
+    estimatedTotalVolume = calculatePowerLawVolume(c, m, proximalLimitSqrtAreaKM, distalLimitSqrtAreaKM)
     
     def thicknessFunction(x):
-        if proximalLimitKM <= x <= distalLimitKM:
+        if proximalLimitSqrtAreaKM <= x <= distalLimitSqrtAreaKM:
             return c*(x**-m)
         else:
             raise ValueError("x is out of range of proximal and distal limits of integration")
     
-    suggestedProximalLimit = calculateProximalLimitEstimate(isopachs,c,m)
+    suggestedProximalLimit = calculateProximalLimitEstimate(isopachs, c, m)
     
     return {"estimatedTotalVolume" : estimatedTotalVolume,
             "thicknessFunction" : thicknessFunction,
@@ -74,4 +77,4 @@ def calculateProximalLimitEstimate(isopachs,coefficient,exponent):
     suggested by Bonadonna and Houghton 2005
     """
     expResults = exponentialModelAnalysis(isopachs,2)
-    return (expResults["segmentCoefficients"][0]/coefficient)**(-(1/exponent))
+    return ((expResults["segmentCoefficients"][0]/coefficient)**(-(1/exponent)))/np.sqrt(np.pi)

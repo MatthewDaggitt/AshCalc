@@ -46,18 +46,30 @@ class ImprovedNotebook(Notebook):
 			self.select(self.currentFrames[frame])
 
 class ScrollFrame(Frame):
-    
-    def __init__(self,parent,width,height):
-        
-        Frame.__init__(self, master=parent)
-        
-        canvas = tkinter.Canvas(self, highlightthickness=0)
-        myscrollbar = Scrollbar(self, orient="vertical", command=canvas.yview)
-        
-        self.innerFrame = Frame(canvas)
-        canvas.configure(yscrollcommand = myscrollbar.set)
-        
-        myscrollbar.grid(row=0, column=1, sticky="NS")
-        canvas.grid(row=0, column=0)
-        canvas.create_window((0,0), window=self.innerFrame, anchor='nw')
-        self.innerFrame.bind("<Configure>",lambda _ : canvas.configure(scrollregion=canvas.bbox("all"), width=width, height=height))
+	
+	def __init__(self,parent,width,height):
+		
+		Frame.__init__(self, master=parent)
+
+		canvas = tkinter.Canvas(self, highlightthickness=0)
+		self.innerFrame = Frame(canvas)
+
+		myscrollbar = Scrollbar(self, orient="vertical")
+		def setY(command, t1, t2=None):
+			top, bottom = myscrollbar.get()
+			if top > 0 or bottom < 1:
+				if t2:
+					canvas.yview(command, t1, t2)
+				else:
+					canvas.yview(command, t1)
+		myscrollbar.configure(command=setY)
+
+
+		canvas.configure(yscrollcommand = myscrollbar.set)
+
+		configureFunc = lambda _ :  canvas.configure(scrollregion=canvas.bbox("all"), width=width, height=height)
+		canvas.create_window((0,0), window=self.innerFrame, anchor='nw')
+		self.innerFrame.bind("<Configure>",configureFunc)
+
+		myscrollbar.grid(row=0, column=1, sticky="NS")
+		canvas.grid(row=0, column=0)

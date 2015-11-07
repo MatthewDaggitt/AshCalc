@@ -31,6 +31,7 @@ class IsopachFrame(LabelFrame):
         self.addButton = Button(self,text="Add isopach",width=self.buttonWidth)
         self.addButton.grid(row=0,column=1,padx=10,pady=10)
         self.addButton.bind("<Button-1>",self.addIsopach)
+
         self.removeButton = Button(self,text="Remove isopach",width=self.buttonWidth)
         self.removeButton.grid(row=0,column=2,padx=10,pady=10)
         self.removeButton.bind("<Button-1>",self.removeIsopach)
@@ -57,13 +58,11 @@ class IsopachFrame(LabelFrame):
         thicknessVar = tkinter.StringVar()
         thicknessM_E = Entry(self.innerFrame,width=10,textvariable=thicknessVar)
         thicknessM_E.grid(column=1, row=rowNumber+2, pady=5)
-        #thicknessM_E.insert(0,rowNumber+1)
         
         areaVar = tkinter.StringVar()
         sqrtAreaKM_E = Entry(self.innerFrame,width=10,textvariable=areaVar)
         sqrtAreaKM_E.grid(column=2, row=rowNumber+2, pady=5)
-        #sqrtAreaKM_E.insert(0,2*math.log(math.sqrt(rowNumber+2)))
-        
+
         includeVar = tkinter.IntVar()
         includeCB = Checkbutton(self.innerFrame,variable=includeVar)
         includeCB.grid(column=3,row=rowNumber+2,pady=5)
@@ -88,32 +87,32 @@ class IsopachFrame(LabelFrame):
             self.calculationTimeEstimationFunction(None)
     
     def getData(self):
-        values = [(thicknessVar.get(),sqrtAreaVar.get(),includeVar.get()) for (_,_),(_,thicknessVar),(_,sqrtAreaVar),(_,includeVar) in self.rows]
+        values = [(thicknessVar.get(), sqrtAreaVar.get(), includeVar.get()) for (_,_),(_,thicknessVar),(_,sqrtAreaVar),(_,includeVar) in self.rows]
         isopachs = []
         for index, (thicknessStr, sqrtAreaStr, includeInt) in enumerate(values):
             if includeInt == 1:
                 thicknessM = helper_functions.validateValue(
                                 thicknessStr,
-                                    "Isopach " + str(index+1) + "'s thickness must be a strictly positive number",
-                                         "float",
-                                           strictLowerBound=0)
-                sqrtAreaKM = helper_functions.validateValue(sqrtAreaStr,
-                                        "Isopach " + str(index+1) + "'s area must be a strictly positive number",
-                                        "float",
-                                        strictLowerBound=0)
+                                "Isopach " + str(index+1) + "'s thickness must be a strictly positive number",
+                                "float",
+                                strictLowerBound=0)
+                sqrtAreaKM = helper_functions.validateValue(
+                                sqrtAreaStr,
+                                "Isopach " + str(index+1) + "'s area must be a strictly positive number",
+                                "float",
+                                strictLowerBound=0)
                 isopachs.append(Isopach(thicknessM,sqrtAreaKM))
         isopachs = sorted(isopachs, key=lambda i : i.thicknessM, reverse=True)
         
-        for i in range(len(isopachs)-1):
-            if isopachs[i].thicknessM == isopachs[i+1].thicknessM:
-                raise ValueError("Isopachs must all have unique thicknesses")
+        if len({i.thicknessM for i in isopachs}) != len(isopachs):
+            raise ValueError("Isopachs must all have unique thicknesses")
         
         return isopachs
     
-    def loadData(self,isopachs):
-        n = len(isopachs)
+    def loadData(self, isopachs):
         current = len(self.rows)
-        difference = n-current
+        difference = len(isopachs)-current
+
         if difference < 0:
             for _ in range(-difference):
                 self.removeIsopach(None)
@@ -121,7 +120,7 @@ class IsopachFrame(LabelFrame):
             for _ in range(difference):
                 self.addIsopach(None)
                 
-        for row, isopach in zip(self.rows,isopachs):
+        for row, isopach in zip(self.rows, isopachs):
             row[1][1].set(isopach.thicknessM)
             row[2][1].set(isopach.sqrtAreaKM)
             row[3][1].set(1)

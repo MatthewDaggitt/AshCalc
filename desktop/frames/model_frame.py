@@ -14,6 +14,8 @@ SQRT_PI = np.sqrt(np.pi)
 
 class ModelFrame(LabelFrame):
 	
+	topPadding = 12
+
 	def __init__(self,parent):        
 		LabelFrame.__init__(self,parent,text="Model",borderwidth=5)
 		
@@ -23,12 +25,12 @@ class ModelFrame(LabelFrame):
 		self.powerlaw = Radiobutton(self,text="Power law model",variable=self.selection,value=Model.POW.value,command=self.changeSelection)
 		self.weibull = Radiobutton(self,text="Weibull model",variable=self.selection,value=Model.WEI.value,command=self.changeSelection)
 
-		self.exponential.grid(row=0,column=0,sticky="W",padx=10,pady=5)
+		self.exponential.grid(row=0,column=0,sticky="W",padx=10,pady=(self.topPadding,5))
 		self.powerlaw.grid(row=1,column=0,sticky="W",padx=10,pady=5)
-		self.weibull.grid(row=2,column=0,sticky="W",padx=10,pady=5)
+		self.weibull.grid(row=2,column=0,sticky="W",padx=10,pady=(5,0))
 		
-		seperator = Separator(self,orient=tkinter.VERTICAL)
-		seperator.grid(row=0, column=1, rowspan=3, sticky="NS", padx=(20,10), pady=(10,0))
+		seperator = Separator(self, orient=tkinter.VERTICAL)
+		seperator.grid(row=0, column=1, rowspan=3, sticky="NS", padx=(20,10), pady=(self.topPadding,0))
 		
 		## Exponential setup
 
@@ -107,32 +109,32 @@ class ModelFrame(LabelFrame):
 		bX = 20
 		
 		if modelType == Model.EXP:
-			self.expNumberOfSegments_L.grid(row=0,column=2,padx=(bX,sX),pady=5,sticky="W")
-			self.expNumberOfSegments_E.grid(row=0,column=3,padx=(sX,bX),pady=5,sticky="W")
+			self.expNumberOfSegments_L.grid(row=0,column=2,padx=(bX,sX),pady=(self.topPadding,5),sticky="W")
+			self.expNumberOfSegments_E.grid(row=0,column=3,padx=(sX,bX),pady=(self.topPadding,5),sticky="W")
 			self.currentWidgets = self.expWidgets
 		elif modelType == Model.POW:
-			self.powProximalLimit_L.grid(row=0,column=2,padx=(bX,sX),pady=5,sticky="W")
-			self.powProximalLimit_E.grid(row=0,column=3,padx=(sX,bX),pady=5,sticky="W")
+			self.powProximalLimit_L.grid(row=0,column=2,padx=(bX,sX),pady=(self.topPadding,5),sticky="W")
+			self.powProximalLimit_E.grid(row=0,column=3,padx=(sX,bX),pady=(self.topPadding,5),sticky="W")
 			self.powDistalLimit_L.grid(row=1,column=2,padx=(bX,sX),pady=5,sticky="W")
 			self.powDistalLimit_E.grid(row=1,column=3,padx=(sX,bX),pady=5,sticky="W")
 			self.currentWidgets = self.powWidgets
 		elif modelType == Model.WEI:
-			self.weiNumberOfRuns_L.grid(row=0,column=2,padx=(bX,sX),pady=5,sticky="W")
-			self.weiNumberOfRuns_E.grid(row=0,column=3,padx=(sX,bX),pady=5,sticky="W")
+			self.weiNumberOfRuns_L.grid(row=0,column=2,padx=(bX,sX),pady=(self.topPadding,5),sticky="W")
+			self.weiNumberOfRuns_E.grid(row=0,column=3,padx=(sX,bX),pady=(self.topPadding,5),sticky="W")
 			self.weiIterationsPerRun_L.grid(row=1,column=2,padx=(bX,sX),pady=5,sticky="W")
 			self.weiIterationsPerRun_E.grid(row=1,column=3,padx=(sX,bX),pady=5,sticky="W")
 			self.weiEstimatedTime_L.grid(row=2,column=2,padx=(bX,sX),pady=5,sticky="W")
 			self.weiEstimatedTime_E.grid(row=2,column=3,padx=(sX,bX),pady=5,sticky="W")
 			
-			self.weiLambdaLowerBoundL.grid(row=0,column=4,padx=(bX,sX),sticky="W")
-			self.weiLambdaLowerBoundE.grid(row=0,column=5,padx=(sX,bX))
-			self.weiLambdaUpperBoundL.grid(row=1,column=4,padx=(bX,sX),sticky="W")
-			self.weiLambdaUpperBoundE.grid(row=1,column=5,padx=(sX,bX))
+			self.weiLambdaLowerBoundL.grid(row=0,column=4,padx=(bX,sX),pady=(self.topPadding,5),sticky="W")
+			self.weiLambdaLowerBoundE.grid(row=0,column=5,padx=(sX,bX),pady=(self.topPadding,5))
+			self.weiLambdaUpperBoundL.grid(row=1,column=4,padx=(bX,sX),pady=5,sticky="W")
+			self.weiLambdaUpperBoundE.grid(row=1,column=5,padx=(sX,bX),pady=5)
 			
-			self.weiKLowerBoundL.grid(row=0,column=6,padx=(bX,sX),sticky="W")
-			self.weiKLowerBoundE.grid(row=0,column=7,padx=(sX,bX))
-			self.weiKUpperBoundL.grid(row=1,column=6,padx=(bX,sX),sticky="W")
-			self.weiKUpperBoundE.grid(row=1,column=7,padx=(sX,bX))
+			self.weiKLowerBoundL.grid(row=0,column=6,padx=(bX,sX),pady=(self.topPadding,5),sticky="W")
+			self.weiKLowerBoundE.grid(row=0,column=7,padx=(sX,bX),pady=(self.topPadding,5))
+			self.weiKUpperBoundL.grid(row=1,column=6,padx=(bX,sX),pady=5,sticky="W")
+			self.weiKUpperBoundE.grid(row=1,column=7,padx=(sX,bX),pady=5)
 			
 			self.currentWidgets = self.weiWidgets
 	

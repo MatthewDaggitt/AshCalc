@@ -5,7 +5,7 @@ class Model(Enum):
 	EXP = 1
 	POW = 2
 	WEI = 3
-	
+
 #################
 ## Model Frame ##
 #################

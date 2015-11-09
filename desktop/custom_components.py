@@ -47,7 +47,7 @@ class ImprovedNotebook(Notebook):
 
 class ScrollFrame(Frame):
 	
-	def __init__(self,parent,width,height):
+	def __init__(self,parent):
 		
 		Frame.__init__(self, master=parent)
 
@@ -55,21 +55,29 @@ class ScrollFrame(Frame):
 		self.innerFrame = Frame(canvas)
 
 		myscrollbar = Scrollbar(self, orient="vertical")
-		def setY(command, t1, t2=None):
-			top, bottom = myscrollbar.get()
-			if top > 0 or bottom < 1:
-				if t2:
-					canvas.yview(command, t1, t2)
-				else:
-					canvas.yview(command, t1)
-		myscrollbar.configure(command=setY)
+		myscrollbar.configure(command=canvas.yview)
+
+		def scrollbarSet(top, bottom):
+			# Hides and shows the scroll frame depending on need
+			if float(top) > 0 or float(bottom) < 1:
+				myscrollbar.grid(row=0, column=1, sticky="NS")
+			else:
+				pass
+				myscrollbar.grid_remove()
+			myscrollbar.set(top, bottom)
+		canvas.configure(yscrollcommand = scrollbarSet)
 
 
-		canvas.configure(yscrollcommand = myscrollbar.set)
-
-		configureFunc = lambda _ :  canvas.configure(scrollregion=canvas.bbox("all"), width=width, height=height)
-		canvas.create_window((0,0), window=self.innerFrame, anchor='nw')
+		configureFunc = lambda _ :  canvas.configure(scrollregion=canvas.bbox("all"))
+		frameID = canvas.create_window((0,0), window=self.innerFrame, anchor='nw')
 		self.innerFrame.bind("<Configure>",configureFunc)
 
+		canvas.grid(row=0, column=0, sticky="NSEW")
 		myscrollbar.grid(row=0, column=1, sticky="NS")
-		canvas.grid(row=0, column=0)
+		self.grid_rowconfigure(0, weight=1)
+		self.grid_columnconfigure(0, weight=0)
+
+
+		#canvas.bind("<Configure>", lambda e : canvas.itemconfig(frameID, width=e.width))
+		canvas.bind("<Configure>", lambda e : canvas.configure(width=self.innerFrame.winfo_width()))
+		

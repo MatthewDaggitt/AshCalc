@@ -387,9 +387,6 @@ class ResultsFrame(LabelFrame):
 		lineXs = [np.sqrt(startX), np.sqrt(endX)]
 		lineYs = [np.log(c) - m*x for x in lineXs]
 		self.regressionGraphFrame.plotLine(lineXs, lineYs, colours[0])
-		
-		print(list(zip(lineXs, lineYs)))
-
 
 	def _updateWei(self):
 		

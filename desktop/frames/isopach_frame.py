@@ -8,25 +8,28 @@ from desktop import helper_functions
 from desktop.custom_components import ScrollFrame
 
 MINIMUM_NUMBER_OF_ISOPACHS = 2
-DEFAULT_NUMBER_OF_ISOPACHS = 6
+DEFAULT_NUMBER_OF_ISOPACHS = 1
 
 IMAGE_DIR = "images/"
 
 class IsopachFrame(LabelFrame):
     
+    entryWidth = 8
+    buttonWidth = 13
+
     def __init__(self,parent,calculationTimeEstimationFunction):
         
         LabelFrame.__init__(self,parent,text="Isopachs",borderwidth=5)
         self.numberOfIsopachs = DEFAULT_NUMBER_OF_ISOPACHS
         self.calculationTimeEstimationFunction = calculationTimeEstimationFunction
         
-        self.buttonWidth = 14
+        openButtonImage = tkinter.PhotoImage(file=IMAGE_DIR + "open_file-icon.gif")
+        self.tickImage = tkinter.PhotoImage(file=IMAGE_DIR + "tick.gif")
         
-        photo = tkinter.PhotoImage(file=IMAGE_DIR + "open_file-icon.gif")
-        self.loadFromFileButton = Button(self,image=photo)
+        self.loadFromFileButton = Button(self,image=openButtonImage)
         self.loadFromFileButton.grid(row=0,column=0,padx=10,pady=10)
         self.loadFromFileButton.bind("<Button-1>",self.loadFromFile)
-        self.loadFromFileButton.image = photo
+        self.loadFromFileButton.image = openButtonImage
         
         self.addButton = Button(self,text="Add isopach",width=self.buttonWidth)
         self.addButton.grid(row=0,column=1,padx=10,pady=10)
@@ -36,35 +39,36 @@ class IsopachFrame(LabelFrame):
         self.removeButton.grid(row=0,column=2,padx=10,pady=10)
         self.removeButton.bind("<Button-1>",self.removeIsopach)
         
-        tooltip.createToolTip(self.loadFromFileButton,"Load isopach data from a comma seperated value file of the form: \n\n\tthickness1,\u221AArea1\n\tthickness2,\u221AArea2\n\t...\n\nwith thickness in metres and \u221AArea in kilometres")
-        
-        scrollFrame = ScrollFrame(self,width=300,height=400)
-        scrollFrame.grid(row=1,column=0,columnspan=3)
-        self.innerFrame = scrollFrame.innerFrame
-        
+        self.scrollFrame = ScrollFrame(self)
+        self.scrollFrame.grid(row=1,column=0,columnspan=3, sticky="NSEW")
+        self.innerFrame = self.scrollFrame.innerFrame
+
+        self.grid_rowconfigure(1,weight=0)
+        self.grid_rowconfigure(1,weight=1)
+
         self.rows = [self.createRow(i) for i in range(self.numberOfIsopachs)]
         
         thicknessM_L = Label(self.innerFrame, text="Thickness (m)")
         thicknessM_L.grid(column=1, row=1, padx=5, pady=5)
         sqrtAreaKM_L = Label(self.innerFrame, text="\u221AArea (km)")
         sqrtAreaKM_L.grid(column=2, row=1, padx=5, pady=5)
-        include_L = Label(self.innerFrame, text="Include?")
+        include_L = Label(self.innerFrame, text="Use?")
         include_L.grid(column=3, row=1, padx=5, pady=5)
         
     def createRow(self,rowNumber):
-        isopach_L = Label(self.innerFrame, text="Isopach " + str(rowNumber+1))
-        isopach_L.grid(column=0, row=rowNumber+2, padx=(0,10), pady=5)
+        isopach_L = Label(self.innerFrame, text=str(rowNumber+1), width=2)
+        isopach_L.grid(column=0, row=rowNumber+2, padx=(0,5), pady=5)
         
         thicknessVar = tkinter.StringVar()
-        thicknessM_E = Entry(self.innerFrame,width=10,textvariable=thicknessVar)
+        thicknessM_E = Entry(self.innerFrame,width=self.entryWidth,textvariable=thicknessVar, justify="right")
         thicknessM_E.grid(column=1, row=rowNumber+2, pady=5)
         
         areaVar = tkinter.StringVar()
-        sqrtAreaKM_E = Entry(self.innerFrame,width=10,textvariable=areaVar)
+        sqrtAreaKM_E = Entry(self.innerFrame,width=self.entryWidth,textvariable=areaVar, justify="right")
         sqrtAreaKM_E.grid(column=2, row=rowNumber+2, pady=5)
 
         includeVar = tkinter.IntVar()
-        includeCB = Checkbutton(self.innerFrame,variable=includeVar)
+        includeCB = tkinter.Checkbutton(self.innerFrame,variable=includeVar, selectimage=self.tickImage)
         includeCB.grid(column=3,row=rowNumber+2,pady=5)
         includeCB.invoke()
         includeCB.bind("<Leave>",self.calculationTimeEstimationFunction)
@@ -101,7 +105,7 @@ class IsopachFrame(LabelFrame):
                                 "Isopach " + str(index+1) + "'s area must be a strictly positive number",
                                 "float",
                                 strictLowerBound=0)
-                isopachs.append(Isopach(thicknessM,sqrtAreaKM))
+                isopachs.append(Isopach(sqrtAreaKM, thicknessM))
         isopachs = sorted(isopachs, key=lambda i : i.thicknessM, reverse=True)
         
         if len({i.thicknessM for i in isopachs}) != len(isopachs):
@@ -129,6 +133,7 @@ class IsopachFrame(LabelFrame):
         return len([None for _,_,_,(_,includeVar) in self.rows if includeVar.get() == 1])
     
     def loadFromFile(self,event):
+        print(self.scrollFrame.winfo_width(), self.scrollFrame.winfo_height())
         fileName = tkinter.filedialog.askopenfilename();
         
         if fileName is None or fileName == "":

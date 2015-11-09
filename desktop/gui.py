@@ -35,10 +35,10 @@ for theme in desiredOrder:
 
 ############################
 
-class App(tkinter.Frame):
+class App(tkinter.ttk.Frame):
 	
 	def __init__(self):
-		tkinter.Frame.__init__(self)
+		tkinter.ttk.Frame.__init__(self)
 		self.master.title("AshCalc")
 		
 		self.threadHandler = ThreadHandler()
@@ -50,19 +50,19 @@ class App(tkinter.Frame):
 		self.calculationFrame.startCalculationB.bind("<Button-1>",self.startCalculation)
 		self.calculationFrame.endCalculationB.configure(state=tkinter.DISABLED)
 
-		self.isopachEntryFrame = IsopachFrame(self,self.estimateWeibullCalculationTime)
-		self.isopachEntryFrame.grid(row=1,column=0,padx=10,sticky="NS",pady=10)
+		self.isopachFrame = IsopachFrame(self,self.estimateWeibullCalculationTime)
+		self.isopachFrame.grid(row=1,column=0,padx=10,sticky="NS",pady=10)
 		
-		self.modelEntryFrame = ModelFrame(self)
-		self.modelEntryFrame.grid(row=0,column=1,sticky="NESW",padx=10,pady=10)
-		self.modelEntryFrame.weiNumberOfRuns_E.bind("<KeyRelease>",self.estimateWeibullCalculationTime)
-		self.modelEntryFrame.weiIterationsPerRun_E.bind("<KeyRelease>",self.estimateWeibullCalculationTime)
+		self.modelFrame = ModelFrame(self)
+		self.modelFrame.grid(row=0,column=1,sticky="NESW",padx=10,pady=10)
+		self.modelFrame.weiNumberOfRuns_E.bind("<KeyRelease>",self.estimateWeibullCalculationTime)
+		self.modelFrame.weiIterationsPerRun_E.bind("<KeyRelease>",self.estimateWeibullCalculationTime)
 		self.estimateWeibullCalculationTime(None)
 
 		self.resultsFrame = ResultsFrame(self)
 		self.resultsFrame.grid(row=1,column=1,padx=10,sticky="NSEW",pady=10)
 
-		self.isopachEntryFrame.loadData([Isopach(0.4,16.25),Isopach(0.2,30.63),Isopach(0.1,58.87),Isopach(0.05,95.75),Isopach(0.02,181.56),Isopach(0.01,275.1)])
+		self.isopachFrame.loadData([Isopach(16.25, 0.4),Isopach(30.63, 0.2),Isopach(58.87,0.1),Isopach(95.75,0.05),Isopach(181.56,0.02),Isopach(275.1,0.01)])
 
 		self.createTooltips()
 
@@ -72,8 +72,8 @@ class App(tkinter.Frame):
 	def startCalculation(self, event):
 		
 		try:
-			isopachs = self.isopachEntryFrame.getData()
-			modelDetails = self.modelEntryFrame.getModelDetails()
+			isopachs = self.isopachFrame.getData()
+			modelDetails = self.modelFrame.getModelDetails()
 			self.threadHandler.startCalculation(modelDetails[0], [isopachs] + modelDetails[1:])
 
 		except ValueError as ve:
@@ -114,18 +114,20 @@ class App(tkinter.Frame):
 
 	def estimateWeibullCalculationTime(self,event):
 		try:
-			numberOfIsopachs = self.isopachEntryFrame.getNumberOfIncludedIsopachs()
-			numberOfRuns = int(self.modelEntryFrame.weiNumberOfRuns_E.get())
-			iterationsPerRun = int(self.modelEntryFrame.weiIterationsPerRun_E.get())
+			numberOfIsopachs = self.isopachFrame.getNumberOfIncludedIsopachs()
+			numberOfRuns = int(self.modelFrame.weiNumberOfRuns_E.get())
+			iterationsPerRun = int(self.modelFrame.weiIterationsPerRun_E.get())
 			if numberOfRuns <= 0 or iterationsPerRun <= 0 or numberOfIsopachs <= 0:
 				raise ValueError()
 			est = self.weibullTimingEstimationFunction(numberOfIsopachs,iterationsPerRun,numberOfRuns)
-			self.modelEntryFrame.weiEstimatedTime_E.insertNew(helper_functions.roundToSF(est,2))
+			self.modelFrame.weiEstimatedTime_E.insertNew(helper_functions.roundToSF(est,2))
 		except ValueError:
-			self.modelEntryFrame.weiEstimatedTime_E.insertNew("N/A")
+			self.modelFrame.weiEstimatedTime_E.insertNew("N/A")
 
 	def createTooltips(self):
 		statsFrame = self.resultsFrame.statsFrame
+
+		tooltip.createToolTip
 
 		tips = [
 			(statsFrame.totalEstimatedVolume_E, 		"The model's estimate for the total volume of the tephra deposit."),
@@ -134,6 +136,8 @@ class App(tkinter.Frame):
 			(statsFrame.expSegVolume_E, 				"The model's estimate for the volume of this segment of the tephra deposit."),
 
 			(statsFrame.powSuggestedProximalLimit_E,	"An estimate for the proximal limit of integration as described\nin Bonadonna and Houghton 2005"),
+		
+			(self.isopachFrame.loadFromFileButton,		"Load isopach data from a comma seperated value file of the form: \n\n\tthickness1,\u221AArea1\n\tthickness2,\u221AArea2\n\t...\n\nwith thickness in metres and \u221AArea in kilometres"),
 		]
 
 		for target, tip in tips:

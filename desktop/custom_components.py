@@ -29,21 +29,17 @@ class ImprovedNotebook(Notebook):
 	
 	def __init__(self,*args,**kwargs):
 		Notebook.__init__(self,*args,**kwargs)
-		self.currentFrames = {}
+		self.currentFrames = set()
 		
 	def addFrame(self,frame,text):
 		if frame not in self.currentFrames:
-			tabID = self.add(frame,text=text)
-			self.currentFrames[frame] = tabID
-			
+			self.add(frame,text=text)
+			self.currentFrames.add(frame)
+		
 	def removeFrame(self,frame):
 		if frame in self.currentFrames:
 			self.forget(frame)
-			del self.currentFrames[frame]
-	
-	def selectFrame(self,frame):
-		if frame in self.currentFrames:
-			self.select(self.currentFrames[frame])
+			self.currentFrames.remove(frame)
 
 class ScrollFrame(Frame):
 	

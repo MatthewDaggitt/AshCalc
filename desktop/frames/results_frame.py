@@ -4,7 +4,7 @@ from copy import deepcopy
 import numpy as np
 
 import tkinter
-from tkinter.ttk import Frame, LabelFrame, Label, Button, Combobox, Separator
+from tkinter.ttk import Frame, LabelFrame, Label, Button, Combobox, Separator, Notebook
 
 import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg as FigureCanvas, NavigationToolbar2TkAgg as NavigationToolbar
@@ -36,7 +36,7 @@ ERROR_SURFACE_MAX_RESOLUTION = 100
 ERROR_SURFACE_MIN_RESOLUTION = 5
 ERROR_SURFACE_DEFAULT_RESOLUTION = 50
 
-NUMBER_OF_SF = 6
+NUMBER_OF_SF = 4
 
 class ResultsFrame(LabelFrame):
 	
@@ -51,7 +51,6 @@ class ResultsFrame(LabelFrame):
 		# Need to work out how to remove
 		self.grid_propagate(False)
 		 
-
 
 		self.resultsDict = None
 		self.modelType = None
@@ -98,7 +97,6 @@ class ResultsFrame(LabelFrame):
 		self.thicknessM = [isopach.thicknessM for isopach in self.isopachs]
 		self.currentParameters = resultsDict
 		self.defaultParameters = deepcopy(self.currentParameters)
-
 
 		self.statsFrame.grid(row=0,column=0,padx=10,pady=5,sticky="NESW")
 		self.graphNotebook.grid(row=0,column=1,padx=10, pady=5,sticky="NESW")
@@ -450,7 +448,7 @@ class ResultsFrame(LabelFrame):
 			messagebox.showerror("Calculation error", ve.args[0])
 			return
 		
-		self.graphNotebook.addFrame(self.errorSurfaceGraphFrame,text="Error surface")
+		self.graphNotebook.addFrame(self.errorSurfaceGraphFrame, text="Error surface")
 		if self.errorSurfaceFrame.xSymbol == "\u03BB":
 			self.errorSurfaceGraphFrame.axes.set_xlabel("$\lambda$")
 		else:
@@ -475,12 +473,13 @@ class ResultsFrame(LabelFrame):
 				mrse = regression_methods.meanRelativeSquaredError(xs, ys, thicknessFunction)
 				return math.log(mrse)
 
-
 		self.errorSurfaceGraphFrame.axes.set_ylabel(self.errorSurfaceFrame.ySymbol)
 		self.errorSurfaceGraphFrame.clear()
 		self.errorSurfaceGraphFrame.plotSurface(errorFunction, xLL, xUL, yLL, yUL, resolution)
-		self.graphNotebook.selectFrame(self.errorSurfaceGraphFrame)
+
+		self.graphNotebook.select(self.errorSurfaceGraphFrame)
 	
+
 	def _parametersReset(self,event):
 		self.currentParameters = deepcopy(self.defaultParameters)
 		self._updateDisplay()
@@ -688,31 +687,32 @@ class ErrorSurfaceFrame(LabelFrame):
 	def __init__(self,parent):
 		LabelFrame.__init__(self, parent, borderwidth=0)
 		
+		entryWidth = 7
 		xPad1 = 30
-		xPad2 = 15
+		xPad2 = 5
 		
 		self.errorXLowerLimitL = Label(self)
-		self.errorXLowerLimitE = CustomEntry(self,width=5)
+		self.errorXLowerLimitE = CustomEntry(self,width=entryWidth,justify="right")
 		self.errorXLowerLimitL.grid(row=0,column=0,padx=(10,xPad2),pady=5,sticky="W")
 		self.errorXLowerLimitE.grid(row=0,column=1,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorXUpperLimitL = Label(self)
-		self.errorXUpperLimitE = CustomEntry(self,width=5)
-		self.errorXUpperLimitL.grid(row=0,column=2,padx=(xPad1,xPad2),pady=5,sticky="W")
-		self.errorXUpperLimitE.grid(row=0,column=3,padx=(xPad2,xPad1),pady=5)
+		self.errorXUpperLimitE = CustomEntry(self,width=entryWidth,justify="right")
+		self.errorXUpperLimitL.grid(row=1,column=0,padx=(10,xPad2),pady=5,sticky="W")
+		self.errorXUpperLimitE.grid(row=1,column=1,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorYLowerLimitL = Label(self)
-		self.errorYLowerLimitE = CustomEntry(self,width=5)
-		self.errorYLowerLimitL.grid(row=1,column=0,padx=(10,xPad2),pady=5,sticky="W")
-		self.errorYLowerLimitE.grid(row=1,column=1,padx=(xPad2,xPad1),pady=5)
+		self.errorYLowerLimitE = CustomEntry(self,width=entryWidth,justify="right")
+		self.errorYLowerLimitL.grid(row=0,column=2,padx=(xPad1,xPad2),pady=5,sticky="W")
+		self.errorYLowerLimitE.grid(row=0,column=3,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorYUpperLimitL = Label(self)
-		self.errorYUpperLimitE = CustomEntry(self,width=5)
+		self.errorYUpperLimitE = CustomEntry(self,width=entryWidth,justify="right")
 		self.errorYUpperLimitL.grid(row=1,column=2,padx=(xPad1,xPad2),pady=5,sticky="W")
 		self.errorYUpperLimitE.grid(row=1,column=3,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorResolutionL = Label(self,text="Resolution: ")
-		self.errorResolutionE = CustomEntry(self,width=5)
+		self.errorResolutionE = CustomEntry(self,width=entryWidth,justify="right")
 		self.errorResolutionE.insert(0,ERROR_SURFACE_DEFAULT_RESOLUTION)
 		self.errorResolutionL.grid(row=0,column=4,padx=(xPad1,xPad2),pady=5,sticky="W")
 		self.errorResolutionE.grid(row=0,column=5,padx=(xPad2,xPad1),pady=5,sticky="E")
@@ -721,7 +721,6 @@ class ErrorSurfaceFrame(LabelFrame):
 		self.errorSurfaceB = Button(self,text=" Calculate error surface ")
 		self.errorSurfaceB.grid(row=1,column=4,columnspan=2,padx=(xPad1,xPad1),sticky="EW")
 		self.errorSurfaceB.configure(state=tkinter.ACTIVE)
-		self.update("x","y","","","","")
 		
 	def update(self,xSymbol,ySymbol,xLL,xUL,yLL,yUL):
 		

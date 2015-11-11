@@ -187,14 +187,12 @@ class ModelFrame(LabelFrame):
 									self.weiLambdaLowerBoundE.get(),
 									"The lower bound for \u03BB must be a decimal",
 									"float")
-			lambdaLowerBound /= SQRT_PI
 			  
 			lambdaUpperBound = helper_functions.validateValue(
 									self.weiLambdaUpperBoundE.get(),
 									"The upper bound for \u03BB must be greater than the lower bound",
 									"float",
 									strictLowerBound=lambdaLowerBound)
-			lambdaUpperBound /= SQRT_PI
 			
 			kLowerBound = helper_functions.validateValue(
 									self.weiKLowerBoundE.get(),

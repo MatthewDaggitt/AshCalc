@@ -40,7 +40,7 @@ class IsopachFrame(LabelFrame):
         self.removeButton.bind("<Button-1>",self.removeIsopach)
         
         self.scrollFrame = ScrollFrame(self)
-        self.scrollFrame.grid(row=1,column=0,columnspan=3, sticky="NSEW")
+        self.scrollFrame.grid(row=1,column=0,columnspan=3, sticky="NS")
         self.innerFrame = self.scrollFrame.innerFrame
 
         self.grid_rowconfigure(1,weight=0)

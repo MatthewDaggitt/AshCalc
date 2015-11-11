@@ -133,7 +133,6 @@ class IsopachFrame(LabelFrame):
         return len([None for _,_,_,(_,includeVar) in self.rows if includeVar.get() == 1])
     
     def loadFromFile(self,event):
-        print(self.scrollFrame.winfo_width(), self.scrollFrame.winfo_height())
         fileName = tkinter.filedialog.askopenfilename();
         
         if fileName is None or fileName == "":
@@ -153,7 +152,7 @@ class IsopachFrame(LabelFrame):
                 try:
                     thicknessM, sqrtAreaKM = line.split(',')
                     line = line.replace(" ","")
-                    isopachs.append(Isopach(float(thicknessM), float(sqrtAreaKM)))
+                    isopachs.append(Isopach(float(sqrtAreaKM), float(thicknessM)))
                 except (ValueError, UnicodeDecodeError):
                     messagebox.showerror("File format error", "Line " + str(index+1) + " of the file \n\n\t\"" + 
                                          line.replace("\n","") + "\"\n\nis not in the format of 'thickness (M),\u221Aarea (KM)'")

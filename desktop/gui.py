@@ -47,12 +47,12 @@ class App(tkinter.ttk.Frame):
 		self.weibullTimingEstimationFunction = createWeibullTimingEstimationFunction()
 		
 		self.calculationFrame = CalculationFrame(self)
-		self.calculationFrame.grid(row=0,column=0,sticky="NSWE",padx=(10,5),pady=10)
+		self.calculationFrame.grid(row=0,column=0,sticky="NSWE",padx=10,pady=10)
 		self.calculationFrame.startCalculationB.bind("<Button-1>",self.startCalculation)
 		self.calculationFrame.endCalculationB.configure(state=tkinter.DISABLED)
 
 		self.isopachFrame = IsopachFrame(self,self.estimateWeibullCalculationTime)
-		self.isopachFrame.grid(row=1,column=0,padx=10,sticky="NS",pady=10)
+		self.isopachFrame.grid(row=1,column=0,padx=10,sticky="NSE",pady=10)
 		
 		self.modelFrame = ModelFrame(self)
 		self.modelFrame.grid(row=0,column=1,sticky="NESW",padx=10,pady=10)

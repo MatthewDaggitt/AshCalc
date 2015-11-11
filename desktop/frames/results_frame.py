@@ -536,27 +536,27 @@ class StatsFrame(LabelFrame):
 		
 		# Total volume
 		self.totalEstimatedVolume_L = Label(self,text="Estimated total volume (km\u00B3): ")
-		self.totalEstimatedVolume_E = CustomEntry(self,width=10, justify="right")
+		self.totalEstimatedVolume_E = CustomEntry(self,width=10,justify="right")
 		self.totalEstimatedVolume_E.setUserEditable(False)
 		self.totalEstimatedVolume_E.grid(row=0,column=1,padx=10,sticky="E")
-		self.totalEstimatedVolume_L.grid(row=0,column=0,sticky="W",padx=10,pady=0)
+		self.totalEstimatedVolume_L.grid(row=0,column=0,sticky="W",padx=10)
 		
 		# Relative squared error
 		self.relativeSquaredError_L = Label(self,text="Mean relative squared error: ")
 		self.relativeSquaredError_L.grid(row=1,column=0,sticky="W",padx=10,pady=padY)
-		self.relativeSquaredError_E = CustomEntry(self,width=10, justify="right")
+		self.relativeSquaredError_E = CustomEntry(self,width=10,justify="right")
 		self.relativeSquaredError_E.grid(row=1,column=1,padx=10,sticky="E")
 		self.relativeSquaredError_E.setUserEditable(False)
 		
 		# Equation
 		self.equation_L = Label(self,text="Equation: ")
-		self.equation_E = CustomEntry(self,width=10, justify="right")
+		self.equation_E = CustomEntry(self,width=10,justify="right")
 		self.equation_E.setUserEditable(False)
 
 		# General
 		self.parameters_L = Label(self,text="Parameters:")
-		self.calculate_B = Button(self,text="Recalculate",width=10)
-		self.reset_B = Button(self,text="Reset",width=10)
+		self.calculate_B = Button(self,text="Recalculate",width=12)
+		self.reset_B = Button(self,text="Reset",width=8)
 
 
 

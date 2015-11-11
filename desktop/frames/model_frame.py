@@ -4,7 +4,6 @@ import numpy as np
 
 from desktop import settings
 from desktop import helper_functions
-from desktop import tooltip
 
 from desktop.settings import Model
 from desktop.custom_components import CustomEntry
@@ -82,9 +81,6 @@ class ModelFrame(LabelFrame):
 		self.weiKLowerBoundE.insert(0, settings.WEI_DEFAULT_K_LOWER_BOUND)
 		self.weiKUpperBoundE.insert(0, settings.WEI_DEFAULT_K_UPPER_BOUND)
 
-		tooltip.createToolTip(self.weiNumberOfRuns_E,"The number of possible sets of parameters that are generated.\nThe final parameters returned are the set which best fit the data.\n\nSee the instruction manual for further details.");
-		tooltip.createToolTip(self.weiIterationsPerRun_E,"The number of times the current parameters are adjusted\nwithin each run.\n\nSee the instruction manual for further details.");
-		tooltip.createToolTip(self.weiEstimatedTime_E,"A rough estimate of the time required to execute this computation.");
 		
 		self.weiWidgets = [self.weiNumberOfRuns_L,self.weiNumberOfRuns_E,
 						   self.weiIterationsPerRun_L,self.weiIterationsPerRun_E,

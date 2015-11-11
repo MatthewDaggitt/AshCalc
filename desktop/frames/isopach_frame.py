@@ -3,7 +3,6 @@ from tkinter.ttk import LabelFrame, Button, Frame, Scrollbar, Label, Entry, Chec
 
 from core.isopach import Isopach
 
-from desktop import tooltip
 from desktop import helper_functions
 from desktop.custom_components import ScrollFrame
 

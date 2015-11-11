@@ -17,7 +17,6 @@ from core.models.power_law import calculatePowerLawVolume
 from core.models.weibull import calculateWeibullVolume, calculateTheta
 from core import regression_methods
 
-from desktop import tooltip
 from desktop import helper_functions
 from desktop.custom_components import CustomEntry, ImprovedNotebook
 from desktop.settings import Model
@@ -716,7 +715,6 @@ class ErrorSurfaceFrame(LabelFrame):
 		self.errorResolutionE.insert(0,ERROR_SURFACE_DEFAULT_RESOLUTION)
 		self.errorResolutionL.grid(row=0,column=4,padx=(xPad1,xPad2),pady=5,sticky="W")
 		self.errorResolutionE.grid(row=0,column=5,padx=(xPad2,xPad1),pady=5,sticky="E")
-		tooltip.createToolTip(self.errorResolutionE,"The resolution of the error surface, which is modelled by\na grid of 'resolution' x 'resolution' points.");
 		
 		self.errorSurfaceB = Button(self,text=" Calculate error surface ")
 		self.errorSurfaceB.grid(row=1,column=4,columnspan=2,padx=(xPad1,xPad1),sticky="EW")

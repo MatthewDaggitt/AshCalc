@@ -35,7 +35,7 @@ class ModelFrame(LabelFrame):
 		## Exponential setup
 
 		self.expNumberOfSegments_L = Label(self,text="Number of segments: ")
-		self.expNumberOfSegments_E = Entry(self,width=5)
+		self.expNumberOfSegments_E = Entry(self,width=5, justify="right")
 
 		self.expNumberOfSegments_E.insert(0, settings.EXP_DEFAULT_NUMBER_OF_SEGMENTS)
 
@@ -44,9 +44,9 @@ class ModelFrame(LabelFrame):
 		## Power law setup
 
 		self.powProximalLimit_L = Label(self,text="Proximal limit of integration: ")
-		self.powProximalLimit_E = Entry(self,width=5)
+		self.powProximalLimit_E = Entry(self,width=5, justify="right")
 		self.powDistalLimit_L = Label(self,text="Distal limit of integration: ")
-		self.powDistalLimit_E = Entry(self,width=5)
+		self.powDistalLimit_E = Entry(self,width=5, justify="right")
 
 		self.powProximalLimit_E.insert(0, settings.POW_DEFAULT_PROXIMAL_LIMIT)
 		self.powDistalLimit_E.insert(0, settings.POW_DEFAULT_DISTAL_LIMIT)
@@ -57,23 +57,23 @@ class ModelFrame(LabelFrame):
 		## Weibull setup
 
 		self.weiNumberOfRuns_L = Label(self,text="Number of runs: ")
-		self.weiNumberOfRuns_E = Entry(self,width=5)
+		self.weiNumberOfRuns_E = Entry(self,width=5, justify="right")
 		self.weiIterationsPerRun_L = Label(self,text="Iterations per run: ")
-		self.weiIterationsPerRun_E = Entry(self,width=5)
+		self.weiIterationsPerRun_E = Entry(self,width=5, justify="right")
 
 		self.weiEstimatedTime_L = Label(self,text="Estimated time (s): ")
-		self.weiEstimatedTime_E = CustomEntry(self,width=5)
+		self.weiEstimatedTime_E = CustomEntry(self,width=5, justify="right")
 		self.weiEstimatedTime_E.setUserEditable(False)
 
 		self.weiLambdaLowerBoundL = Label(self,text="\u03BB lower bound:")
 		self.weiLambdaUpperBoundL = Label(self,text="\u03BB upper bound:")
-		self.weiLambdaLowerBoundE = Entry(self,width=5)
-		self.weiLambdaUpperBoundE = Entry(self,width=5)
+		self.weiLambdaLowerBoundE = Entry(self,width=5, justify="right")
+		self.weiLambdaUpperBoundE = Entry(self,width=5, justify="right")
 
 		self.weiKLowerBoundL = Label(self,text="k lower bound:")
 		self.weiKUpperBoundL = Label(self,text="k upper bound:")
-		self.weiKLowerBoundE = Entry(self,width=5)
-		self.weiKUpperBoundE = Entry(self,width=5)
+		self.weiKLowerBoundE = Entry(self,width=5, justify="right")
+		self.weiKUpperBoundE = Entry(self,width=5, justify="right")
 
 		self.weiNumberOfRuns_E.insert(0, settings.WEI_DEFAULT_NUMBER_OF_RUNS)
 		self.weiIterationsPerRun_E.insert(0, settings.WEI_DEFAULT_ITERATIONS_PER_RUN)

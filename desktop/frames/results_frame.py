@@ -537,7 +537,7 @@ class StatsFrame(LabelFrame):
 		
 		# Total volume
 		self.totalEstimatedVolume_L = Label(self,text="Estimated total volume (km\u00B3): ")
-		self.totalEstimatedVolume_E = CustomEntry(self,width=10)
+		self.totalEstimatedVolume_E = CustomEntry(self,width=10, justify="right")
 		self.totalEstimatedVolume_E.setUserEditable(False)
 		self.totalEstimatedVolume_E.grid(row=0,column=1,padx=10,sticky="E")
 		self.totalEstimatedVolume_L.grid(row=0,column=0,sticky="W",padx=10,pady=0)
@@ -545,13 +545,13 @@ class StatsFrame(LabelFrame):
 		# Relative squared error
 		self.relativeSquaredError_L = Label(self,text="Mean relative squared error: ")
 		self.relativeSquaredError_L.grid(row=1,column=0,sticky="W",padx=10,pady=padY)
-		self.relativeSquaredError_E = CustomEntry(self,width=10)
+		self.relativeSquaredError_E = CustomEntry(self,width=10, justify="right")
 		self.relativeSquaredError_E.grid(row=1,column=1,padx=10,sticky="E")
 		self.relativeSquaredError_E.setUserEditable(False)
 		
 		# Equation
 		self.equation_L = Label(self,text="Equation: ")
-		self.equation_E = CustomEntry(self,width=10)
+		self.equation_E = CustomEntry(self,width=10, justify="right")
 		self.equation_E.setUserEditable(False)
 
 		# General
@@ -570,24 +570,24 @@ class StatsFrame(LabelFrame):
 
 		# Segment volume
 		self.expSegVolume_L = Label(self,text="Segment volume (km\u00B3): ")
-		self.expSegVolume_E = CustomEntry(self,width=10)
+		self.expSegVolume_E = CustomEntry(self,width=10, justify="right")
 		self.expSegVolume_E.setUserEditable(False)
 		
 		# Segment start
 		self.expSegStartLimit_L = Label(self,text="Start of segment: ")
-		self.expSegStartLimit_E = CustomEntry(self,width=10)
+		self.expSegStartLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Segment end
 		self.expSegEndLimit_L = Label(self,text="End of segment: ")
-		self.expSegEndLimit_E = CustomEntry(self,width=10)
+		self.expSegEndLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Segment coefficient
 		self.expSegCoefficent_L = Label(self,text="Segment coefficient, c: ")
-		self.expSegCoefficent_E = CustomEntry(self,width=10)
+		self.expSegCoefficent_E = CustomEntry(self,width=10, justify="right")
 		
 		# Segment exponent
 		self.expSegExponent_L = Label(self,text="Segment exponent, m: ")
-		self.expSegExponent_E = CustomEntry(self,width=10)
+		self.expSegExponent_E = CustomEntry(self,width=10, justify="right")
 		
 		
 
@@ -597,23 +597,23 @@ class StatsFrame(LabelFrame):
 
 		# Coefficient
 		self.powCoefficient_L = Label(self,text="Coefficient, c: ")
-		self.powCoefficient_E = CustomEntry(self,width=10)
+		self.powCoefficient_E = CustomEntry(self,width=10, justify="right")
 		
 		# Exponent
 		self.powExponent_L = Label(self,text="Exponent, m: ")
-		self.powExponent_E = CustomEntry(self,width=10)
+		self.powExponent_E = CustomEntry(self,width=10, justify="right")
 		
 		# Proximal limit
 		self.powProximalLimit_L = Label(self,text="Proximal limit: ")
-		self.powProximalLimit_E = CustomEntry(self,width=10)
+		self.powProximalLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Distal limit
 		self.powDistalLimit_L = Label(self,text="Distal limit: ")
-		self.powDistalLimit_E = CustomEntry(self,width=10)
+		self.powDistalLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Suggested proximal limit
 		self.powSuggestedProximalLimit_L = Label(self,text="Suggested proximal limit: ")
-		self.powSuggestedProximalLimit_E = CustomEntry(self,width=10)
+		self.powSuggestedProximalLimit_E = CustomEntry(self,width=10, justify="right")
 		self.powSuggestedProximalLimit_E.setUserEditable(False)
 
 		
@@ -624,15 +624,15 @@ class StatsFrame(LabelFrame):
 
 		# lambda
 		self.weiLambdaL = Label(self,text="Estimated \u03BB: ")
-		self.weiLambdaE = CustomEntry(self,width=10)
+		self.weiLambdaE = CustomEntry(self,width=10, justify="right")
 		
 		# k
 		self.weiKL = Label(self,text="Estimated k: ")
-		self.weiKE = CustomEntry(self,width=10)
+		self.weiKE = CustomEntry(self,width=10, justify="right")
 		
 		# theta
 		self.weiThetaL = Label(self,text="Estimated \u03B8: ")
-		self.weiThetaE = CustomEntry(self,width=10)
+		self.weiThetaE = CustomEntry(self,width=10, justify="right")
 		
 
 

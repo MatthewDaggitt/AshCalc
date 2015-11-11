@@ -18,7 +18,7 @@ from core.models.weibull import calculateWeibullVolume, calculateTheta
 from core import regression_methods
 
 from desktop import helper_functions
-from desktop.custom_components import CustomEntry, ImprovedNotebook
+from desktop.custom_components import CustomEntry, ImprovedNotebook, CutDownNavigationToolbar
 from desktop.settings import Model
 
 ###########Config###########
@@ -44,7 +44,7 @@ class ResultsFrame(LabelFrame):
 
 	def __init__(self,parent):
 
-		LabelFrame.__init__(self, parent,text="Results", width=846, height=485)
+		LabelFrame.__init__(self, parent,text="Results", width=825, height=485)
 
 		# Terrible kludgy hack to force the app to stay the right size
 		# Need to work out how to remove
@@ -776,15 +776,15 @@ class GraphFrame(Frame):
 
 		self.dim = dim
 
-		self.figure = pyplot.Figure(figsize=(5.8,3.5), facecolor=(240/255,240/255,237/255))
+		self.figure = pyplot.Figure(figsize=(5.5,3.2), facecolor=(240/255,240/255,237/255))
 		self.figure.subplots_adjust(left=0.15, bottom=0.2)
 
 		self.canvas = FigureCanvas(self.figure, master=self)
-		self.canvas.get_tk_widget().grid(row=0,column=0,sticky="W")
+		self.canvas.get_tk_widget().pack()
 		self.canvas.get_tk_widget().configure(highlightthickness=0)
 
-		#toolbar = CutDownNavigationToolbar(self.canvas,self)
-		#toolbar.grid(row=1,column=2,sticky="W")
+		toolbar = CutDownNavigationToolbar(self.canvas,self)
+		toolbar.pack()
 		
 		if dim == 2:
 			self.axes = self.figure.add_subplot(1,1,1)

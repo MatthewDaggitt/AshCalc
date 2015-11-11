@@ -1,12 +1,23 @@
 import tkinter
 from tkinter.ttk import Entry, Notebook, Frame, Scrollbar
-from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg as NavigationToolbar
+from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 
 
-class CutDownNavigationToolbar(NavigationToolbar):
+class CutDownNavigationToolbar(NavigationToolbar2TkAgg):
 	# only display the buttons needed
-	toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ("Home", "Back", "Forward", "Pan", "Save")]
+	toolitems = [t for t in NavigationToolbar2TkAgg.toolitems if t[0] in ("Home", "Pan", "Save")]
 	
+	# Get ride of mode text
+	def pan(self):
+	    NavigationToolbar2TkAgg.pan(self)
+	    self.mode = ""
+	    self.set_message(self.mode)
+
+	def zoom(self):
+	    NavigationToolbar2TkAgg.zoom(self)
+	    self.mode = ""
+	    self.set_message(self.mode)
+
 class CustomEntry(Entry):
 	
 	def __init__(self,*args,**kwargs):

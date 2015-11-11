@@ -128,9 +128,9 @@ class ModelFrame(LabelFrame):
 			self.weiLambdaUpperBoundE.grid(row=1,column=5,padx=(sX,bX),pady=5)
 			
 			self.weiKLowerBoundL.grid(row=0,column=6,padx=(bX,sX),pady=(self.topPadding,5),sticky="W")
-			self.weiKLowerBoundE.grid(row=0,column=7,padx=(sX,bX),pady=(self.topPadding,5))
+			self.weiKLowerBoundE.grid(row=0,column=7,padx=(sX,sX),pady=(self.topPadding,5))
 			self.weiKUpperBoundL.grid(row=1,column=6,padx=(bX,sX),pady=5,sticky="W")
-			self.weiKUpperBoundE.grid(row=1,column=7,padx=(sX,bX),pady=5)
+			self.weiKUpperBoundE.grid(row=1,column=7,padx=(sX,sX),pady=5)
 			
 			self.currentWidgets = self.weiWidgets
 	

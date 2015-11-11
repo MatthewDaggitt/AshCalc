@@ -135,7 +135,7 @@ class App(tkinter.ttk.Frame):
 			
 			(statsFrame.expSegVolume_E, 				"The model's estimate for the volume of this segment of the tephra deposit."),
 
-			(statsFrame.powSuggestedProximalLimit_E,	"An estimate for the proximal limit of integration as described\nin Bonadonna and Houghton 2005"),
+			(statsFrame.powSuggestedProximalLimit_E,	"An estimate for the proximal limit of integration as described\nin Bonadonna and Houghton 2005. Requires 4 or more isopachs."),
 		
 			(self.isopachFrame.loadFromFileButton,		"Load isopach data from a comma seperated value file of the form: \n\n\tthickness1,\u221AArea1\n\tthickness2,\u221AArea2\n\t...\n\nwith thickness in metres and \u221AArea in kilometres"),
 		]

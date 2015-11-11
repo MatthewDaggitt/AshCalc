@@ -469,7 +469,7 @@ class ResultsFrame(LabelFrame):
 				theta = calculateTheta(xs,ys,lamb,k)
 				def thicknessFunction(x):
 					try:
-						return math.exp(math.log(theta)+(k-2)*math.log(x/lamb)-(x/lamb)**k)
+						return np.exp(np.log(theta)+(k-2)*np.log(x/lamb)-(x/lamb)**k)
 					except FloatingPointError:
 						return 0
 				mrse = regression_methods.meanRelativeSquaredError(xs, ys, thicknessFunction)
@@ -478,7 +478,7 @@ class ResultsFrame(LabelFrame):
 
 		self.errorSurfaceGraphFrame.axes.set_ylabel(self.errorSurfaceFrame.ySymbol)
 		self.errorSurfaceGraphFrame.clear()
-		self.errorSurfaceGraphFrame.plotSurface(self.currentParameters["errorFunction"], xLL, xUL, yLL, yUL, resolution)
+		self.errorSurfaceGraphFrame.plotSurface(errorFunction, xLL, xUL, yLL, yUL, resolution)
 		self.graphNotebook.selectFrame(self.errorSurfaceGraphFrame)
 	
 	def _parametersReset(self,event):

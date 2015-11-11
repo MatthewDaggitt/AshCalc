@@ -18,7 +18,7 @@ from desktop.settings import Model
 from desktop import helper_functions
 from desktop.thread_handlers import ThreadHandler
 from desktop.timing_module import createWeibullTimingEstimationFunction
-from desktop import tooltip
+from desktop.tooltip import ToolTip
 
 from desktop.frames.model_frame import ModelFrame
 from desktop.frames.isopach_frame import IsopachFrame
@@ -146,4 +146,4 @@ class App(tkinter.ttk.Frame):
 		for target, wrap, tip in tips:
 			if wrap:
 				tip = "\n".join(textwrap.wrap(tip, 60))
-			tooltip.createToolTip(target, tip)
+			ToolTip(target, tip)

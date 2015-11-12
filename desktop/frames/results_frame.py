@@ -148,25 +148,30 @@ class ResultsFrame(LabelFrame):
 		fr.expSegVolume_L.grid(row=4,column=0,padx=10,sticky="W",pady=padY)
 		fr.expSegVolume_E.grid(row=4,column=1,padx=10,sticky="E")
 
-		fr.parameters_L.grid(row=5,column=0,padx=10,pady=padY,sticky="W")
+		fr.equation_L.grid(row=5,column=0,sticky="W",padx=10,pady=padY)
+		fr.equation_E.grid(row=5,column=1,padx=10,sticky="E")
+		fr.equation_L.configure(text="Segment equation:")
 
-		fr.expSegStartLimit_L.grid(row=6,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegStartLimit_E.grid(row=6,column=1,padx=10,sticky="E")
+		fr.parameters_L.grid(row=6,column=0,padx=10,pady=padY,sticky="W")
 
-		fr.expSegEndLimit_L.grid(row=7,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegEndLimit_E.grid(row=7,column=1,padx=10,sticky="E")
+		fr.expSegStartLimit_L.grid(row=7,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegStartLimit_E.grid(row=7,column=1,padx=10,sticky="E")
 
-		fr.expSegCoefficent_L.grid(row=8,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegCoefficent_E.grid(row=8,column=1,padx=10,sticky="E")
+		fr.expSegEndLimit_L.grid(row=8,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegEndLimit_E.grid(row=8,column=1,padx=10,sticky="E")
 
-		fr.expSegExponent_L.grid(row=9,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegExponent_E.grid(row=9,column=1,padx=10,sticky="E")
+		fr.expSegCoefficent_L.grid(row=9,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegCoefficent_E.grid(row=9,column=1,padx=10,sticky="E")
 
-		
+		fr.expSegExponent_L.grid(row=10,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegExponent_E.grid(row=10,column=1,padx=10,sticky="E")
+
 		# Recalculate buttons
-		fr.calculate_B.grid(row=10,column=0,padx=padX,pady=padY,sticky="W")
-		fr.reset_B.grid(row=10,column=1,padx=10,sticky="E")
+		fr.calculate_B.grid(row=11,column=0,padx=padX,pady=padY,sticky="W")
+		fr.reset_B.grid(row=11,column=1,padx=10,sticky="E")
 		
+		
+
 		self.graphNotebook.addFrame(self.regressionGraphFrame, text="Regression")
 
 	def _displayPow(self):
@@ -174,26 +179,33 @@ class ResultsFrame(LabelFrame):
 		padX = self.padX
 		padY = self.padY
 
-		fr.parameters_L.grid(row=2,column=0,padx=10,pady=padY,sticky="W")
+		fr.equation_L.grid(row=2,column=0,sticky="W",padx=10,pady=padY)
+		fr.equation_E.grid(row=2,column=1,padx=10,sticky="E")
+		fr.equation_L.configure(text="Equation:")
 
-		fr.powCoefficient_L.grid(row=3,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powCoefficient_E.grid(row=3,column=1,padx=10,sticky="E")
+		fr.parameters_L.grid(row=3,column=0,padx=10,pady=padY,sticky="W")
 
-		fr.powExponent_L.grid(row=4,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powExponent_E.grid(row=4,column=1,padx=10,sticky="E")
+		fr.powCoefficient_L.grid(row=4,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powCoefficient_E.grid(row=4,column=1,padx=10,sticky="E")
 
-		fr.powProximalLimit_L.grid(row=5,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powProximalLimit_E.grid(row=5,column=1,padx=10,sticky="E")
+		fr.powExponent_L.grid(row=5,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powExponent_E.grid(row=5,column=1,padx=10,sticky="E")
 
-		fr.powDistalLimit_L.grid(row=6,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powDistalLimit_E.grid(row=6,column=1,padx=10,sticky="E")
+		fr.powProximalLimit_L.grid(row=6,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powProximalLimit_E.grid(row=6,column=1,padx=10,sticky="E")
 
-		fr.powSuggestedProximalLimit_L.grid(row=10,column=0,sticky="W",padx=10,pady=padY+20)
-		fr.powSuggestedProximalLimit_E.grid(row=10,column=1,padx=10,sticky="E")
+		fr.powDistalLimit_L.grid(row=7,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powDistalLimit_E.grid(row=7,column=1,padx=10,sticky="E")
 
 		# Recalculate buttons
-		fr.calculate_B.grid(row=9,column=0,padx=padX,pady=padY,sticky="W")
-		fr.reset_B.grid(row=9,column=1,padx=10,sticky="E")
+		fr.calculate_B.grid(row=8,column=0,padx=padX,pady=padY,sticky="W")
+		fr.reset_B.grid(row=8,column=1,padx=10,sticky="E")
+
+		fr.powSuggestedProximalLimit_L.grid(row=9,column=0,sticky="W",padx=10,pady=padY)
+		fr.powSuggestedProximalLimit_E.grid(row=9,column=1,padx=10,sticky="E")
+
+		
+
 
 		self.graphNotebook.addFrame(self.regressionGraphFrame, text="Regression")
 		self.errorSurfaceFrame.update("c", "m", 0.0, 5.0, 0.0, 5.0)
@@ -203,20 +215,26 @@ class ResultsFrame(LabelFrame):
 		padX = self.padX
 		padY = self.padY
 
-		fr.parameters_L.grid(row=2,column=0,padx=10,pady=padY,sticky="W")
+		fr.equation_L.grid(row=2,column=0,sticky="W",padx=10,pady=padY)
+		fr.equation_E.grid(row=2,column=1,padx=10,sticky="E")
+		fr.equation_L.configure(text="Equation:")
 
-		fr.weiLambdaL.grid(row=3,column=0,padx=padX,pady=padY,sticky="W")
-		fr.weiLambdaE.grid(row=3,column=1,padx=10,sticky="E")
+		fr.parameters_L.grid(row=3,column=0,padx=10,pady=padY,sticky="W")
 
-		fr.weiKL.grid(row=4,column=0,padx=padX,pady=padY,sticky="W")
-		fr.weiKE.grid(row=4,column=1,padx=10,sticky="E")
+		fr.weiLambdaL.grid(row=4,column=0,padx=padX,pady=padY,sticky="W")
+		fr.weiLambdaE.grid(row=4,column=1,padx=10,sticky="E")
 
-		fr.weiThetaL.grid(row=5,column=0,padx=padX,pady=padY,sticky="W")
-		fr.weiThetaE.grid(row=5,column=1,padx=10,sticky="E")
+		fr.weiKL.grid(row=5,column=0,padx=padX,pady=padY,sticky="W")
+		fr.weiKE.grid(row=5,column=1,padx=10,sticky="E")
+
+		fr.weiThetaL.grid(row=6,column=0,padx=padX,pady=padY,sticky="W")
+		fr.weiThetaE.grid(row=6,column=1,padx=10,sticky="E")
 
 		# Recalculate buttons
-		fr.calculate_B.grid(row=6,column=0,padx=padX,pady=padY,sticky="W")
-		fr.reset_B.grid(row=6,column=1,padx=10,sticky="E")
+		fr.calculate_B.grid(row=7,column=0,padx=padX,pady=padY,sticky="W")
+		fr.reset_B.grid(row=7,column=1,padx=10,sticky="E")
+
+		
 
 		parameterLimits = self.currentParameters["limits"]
 		lambdaLower, lambdaUpper = parameterLimits[0]
@@ -538,7 +556,7 @@ class StatsFrame(LabelFrame):
 		self.totalEstimatedVolume_L = Label(self,text="Estimated total volume (km\u00B3): ")
 		self.totalEstimatedVolume_E = CustomEntry(self,width=10,justify="right")
 		self.totalEstimatedVolume_E.setUserEditable(False)
-		self.totalEstimatedVolume_E.grid(row=0,column=1,padx=10,sticky="E")
+		self.totalEstimatedVolume_E.grid(row=0,column=1,padx=10,pady=padY,sticky="E")
 		self.totalEstimatedVolume_L.grid(row=0,column=0,sticky="W",padx=10)
 		
 		# Relative squared error

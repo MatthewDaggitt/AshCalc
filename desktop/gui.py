@@ -63,7 +63,7 @@ class App(tkinter.ttk.Frame):
 		self.resultsFrame = ResultsFrame(self)
 		self.resultsFrame.grid(row=1,column=1,padx=10,sticky="NSEW",pady=10)
 
-		self.isopachFrame.loadData([Isopach(16.25, 0.4),Isopach(30.63, 0.2),Isopach(58.87,0.1),Isopach(95.75,0.05),Isopach(181.56,0.02),Isopach(275.1,0.01)])
+		self.isopachFrame.loadData([Isopach(0.4, 16.25),Isopach(0.2, 30.63),Isopach(0.1, 58.87),Isopach(0.05, 95.75),Isopach(0.02, 181.56),Isopach(0.01, 275.1)])
 
 		self.createTooltips()
 

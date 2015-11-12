@@ -104,7 +104,7 @@ class IsopachFrame(LabelFrame):
                                 "Isopach " + str(index+1) + "'s area must be a strictly positive number",
                                 "float",
                                 strictLowerBound=0)
-                isopachs.append(Isopach(sqrtAreaKM, thicknessM))
+                isopachs.append(Isopach(thicknessM, sqrtAreaKM))
         isopachs = sorted(isopachs, key=lambda i : i.thicknessM, reverse=True)
         
         if len({i.thicknessM for i in isopachs}) != len(isopachs):
@@ -151,7 +151,7 @@ class IsopachFrame(LabelFrame):
                 try:
                     thicknessM, sqrtAreaKM = line.split(',')
                     line = line.replace(" ","")
-                    isopachs.append(Isopach(float(sqrtAreaKM), float(thicknessM)))
+                    isopachs.append(Isopach(float(thicknessM), float(sqrtAreaKM)))
                 except (ValueError, UnicodeDecodeError):
                     messagebox.showerror("File format error", "Line " + str(index+1) + " of the file \n\n\t\"" + 
                                          line.replace("\n","") + "\"\n\nis not in the format of 'thickness (M),\u221Aarea (KM)'")

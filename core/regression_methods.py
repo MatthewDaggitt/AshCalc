@@ -5,12 +5,19 @@ Created on 2 Jul 2013
 '''
 
 from scipy import stats
+import numpy as np
 
 from core.geom import Line
     
 def calculateSingleLineRegression(xs,ys):
     """ Returns the least squares regression line through the provided coordinates """
-    slope, intercept = stats.linregress(xs, ys)[0:2]
+    if len(xs) == 2:
+        # Case needed as stats.linregress occasionaly throughs warnings for length 2 datasets
+        slope = (ys[1]-ys[0])/(xs[1]-xs[0])
+        intercept = ys[0] - slope*xs[0]
+    else:
+        slope, intercept = stats.linregress(xs, ys)[0:2]
+    
     return Line(slope,intercept)
 
 def residualSumOfSquares(xs,ys,func):

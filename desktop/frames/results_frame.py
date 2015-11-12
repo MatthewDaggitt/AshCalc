@@ -98,7 +98,7 @@ class ResultsFrame(LabelFrame):
 		self.defaultParameters = deepcopy(self.currentParameters)
 
 		self.statsFrame.grid(row=0,column=0,padx=10,pady=5,sticky="NESW")
-		self.graphNotebook.grid(row=0,column=1,padx=10, pady=5,sticky="NESW")
+		self.graphNotebook.grid(row=0,column=1,padx=10, pady=5,sticky="NEW")
 
 		if self.modelType == Model.EXP:
 			self._displayExp()

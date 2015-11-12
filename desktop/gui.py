@@ -140,7 +140,7 @@ class App(tkinter.ttk.Frame):
 			(self.resultsFrame.statsFrame.powSuggestedProximalLimit_E,	True, "An estimate for the proximal limit of integration as described in Bonadonna and Houghton 2005. Requires 4 or more isopachs."),
 			(self.resultsFrame.errorSurfaceFrame.errorResolutionE,		True, "The resolution of the error surface, which is modelled by a grid of 'resolution' x 'resolution' points."),
 			
-			(self.isopachFrame.loadFromFileButton,						False, "Load isopach data from a CSV file of the form: \n\tthickness1,\u221AArea1\n\tthickness2,\u221AArea2\n\t...\n\nwith thickness in metres and \u221AArea in kilometres"),
+			(self.isopachFrame.loadFromFileButton,						False, "Load isopach data from a CSV file of the form: \n\tthickness1, \u221AArea1\n\tthickness2, \u221AArea2\n\t...\n\tthicknessN, \u221AAreaN\nwith thickness in metres and \u221AArea in kilometres"),
 		]
 
 		for target, wrap, tip in tips:

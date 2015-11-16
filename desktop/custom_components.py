@@ -1,12 +1,23 @@
 import tkinter
 from tkinter.ttk import Entry, Notebook, Frame, Scrollbar
-from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg as NavigationToolbar
+from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 
 
-class CutDownNavigationToolbar(NavigationToolbar):
+class CutDownNavigationToolbar(NavigationToolbar2TkAgg):
 	# only display the buttons needed
-	toolitems = [t for t in NavigationToolbar.toolitems if t[0] in ("Home", "Back", "Forward", "Pan", "Save")]
+	toolitems = [t for t in NavigationToolbar2TkAgg.toolitems if t[0] in ("Home", "Pan", "Save")]
 	
+	# Get ride of mode text
+	def pan(self):
+	    NavigationToolbar2TkAgg.pan(self)
+	    self.mode = ""
+	    self.set_message(self.mode)
+
+	def zoom(self):
+	    NavigationToolbar2TkAgg.zoom(self)
+	    self.mode = ""
+	    self.set_message(self.mode)
+
 class CustomEntry(Entry):
 	
 	def __init__(self,*args,**kwargs):
@@ -29,21 +40,17 @@ class ImprovedNotebook(Notebook):
 	
 	def __init__(self,*args,**kwargs):
 		Notebook.__init__(self,*args,**kwargs)
-		self.currentFrames = {}
+		self.currentFrames = set()
 		
 	def addFrame(self,frame,text):
 		if frame not in self.currentFrames:
-			tabID = self.add(frame,text=text)
-			self.currentFrames[frame] = tabID
-			
+			self.add(frame,text=text)
+			self.currentFrames.add(frame)
+		
 	def removeFrame(self,frame):
 		if frame in self.currentFrames:
 			self.forget(frame)
-			del self.currentFrames[frame]
-	
-	def selectFrame(self,frame):
-		if frame in self.currentFrames:
-			self.select(self.currentFrames[frame])
+			self.currentFrames.remove(frame)
 
 class ScrollFrame(Frame):
 	

@@ -41,10 +41,10 @@ def weibullModelAnalysis(isopachs,numberOfRuns,iterationsPerRun,limits):
 		dict["limits"]:list of 2-tuples	  --  the limits for lambda and k used in calculations
 		
 	"""
-	
+
 	sqrtAreaKM = np.array([isopach.sqrtAreaKM for isopach in isopachs])
 	thicknessM = np.array([isopach.thicknessM for isopach in isopachs])
-	
+
 	lamb, k, bestScore = _solveWeibullParameters(_logErrorFunction,
 												 sqrtAreaKM,
 												 thicknessM,
@@ -55,7 +55,7 @@ def weibullModelAnalysis(isopachs,numberOfRuns,iterationsPerRun,limits):
 	
 	thicknessFunction = _createThicknessFunction(lamb,k,theta)
 	estimatedTotalVolumeKM3 = calculateWeibullVolume(lamb,k,theta)
-		
+
 	return {"estimatedTotalVolume" : estimatedTotalVolumeKM3,
 			"thicknessFunction" : thicknessFunction,
 			"lambda" : lamb,

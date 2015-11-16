@@ -46,15 +46,18 @@ def powerLawModelAnalysis(isopachs, proximalLimitKM, distalLimitKM):
     m = -regressionLine.m
     c = np.exp(regressionLine.c)
     estimatedTotalVolume = calculatePowerLawVolume(c, m, proximalLimitSqrtAreaKM, distalLimitSqrtAreaKM)
-    
+
     def thicknessFunction(x):
         if proximalLimitSqrtAreaKM <= x <= distalLimitSqrtAreaKM:
             return c*(x**-m)
         else:
             raise ValueError("x is out of range of proximal and distal limits of integration")
     
-    suggestedProximalLimit = calculateProximalLimitEstimate(isopachs, c, m)
-    
+    if len(isopachs) > 3:
+        suggestedProximalLimit = calculateProximalLimitEstimate(isopachs, c, m)
+    else:
+        suggestedProximalLimit = "N/A"
+
     return {"estimatedTotalVolume" : estimatedTotalVolume,
             "thicknessFunction" : thicknessFunction,
             "regressionLine" : regressionLine,

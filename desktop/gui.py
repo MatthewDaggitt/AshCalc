@@ -4,6 +4,7 @@ Created on 15 Aug 2013
 @author: Matthew Daggitt
 '''
 import math
+import textwrap
 
 import tkinter
 from tkinter import messagebox
@@ -17,7 +18,7 @@ from desktop.settings import Model
 from desktop import helper_functions
 from desktop.thread_handlers import ThreadHandler
 from desktop.timing_module import createWeibullTimingEstimationFunction
-from desktop import tooltip
+from desktop.tooltip import ToolTip
 
 from desktop.frames.model_frame import ModelFrame
 from desktop.frames.isopach_frame import IsopachFrame
@@ -46,12 +47,12 @@ class App(tkinter.ttk.Frame):
 		self.weibullTimingEstimationFunction = createWeibullTimingEstimationFunction()
 		
 		self.calculationFrame = CalculationFrame(self)
-		self.calculationFrame.grid(row=0,column=0,sticky="NSWE",padx=(10,5),pady=10)
+		self.calculationFrame.grid(row=0,column=0,sticky="NSWE",padx=10,pady=10)
 		self.calculationFrame.startCalculationB.bind("<Button-1>",self.startCalculation)
 		self.calculationFrame.endCalculationB.configure(state=tkinter.DISABLED)
 
 		self.isopachFrame = IsopachFrame(self,self.estimateWeibullCalculationTime)
-		self.isopachFrame.grid(row=1,column=0,padx=10,sticky="NS",pady=10)
+		self.isopachFrame.grid(row=1,column=0,padx=10,sticky="NSE",pady=10)
 		
 		self.modelFrame = ModelFrame(self)
 		self.modelFrame.grid(row=0,column=1,sticky="NESW",padx=10,pady=10)
@@ -62,7 +63,7 @@ class App(tkinter.ttk.Frame):
 		self.resultsFrame = ResultsFrame(self)
 		self.resultsFrame.grid(row=1,column=1,padx=10,sticky="NSEW",pady=10)
 
-		self.isopachFrame.loadData([Isopach(16.25, 0.4),Isopach(30.63, 0.2),Isopach(58.87,0.1),Isopach(95.75,0.05),Isopach(181.56,0.02),Isopach(275.1,0.01)])
+		self.isopachFrame.loadData([Isopach(0.4, 16.25),Isopach(0.2, 30.63),Isopach(0.1, 58.87),Isopach(0.05, 95.75),Isopach(0.02, 181.56),Isopach(0.01, 275.1)])
 
 		self.createTooltips()
 
@@ -127,18 +128,22 @@ class App(tkinter.ttk.Frame):
 	def createTooltips(self):
 		statsFrame = self.resultsFrame.statsFrame
 
-		tooltip.createToolTip
-
-		tips = [
-			(statsFrame.totalEstimatedVolume_E, 		"The model's estimate for the total volume of the tephra deposit."),
-			(statsFrame.relativeSquaredError_E, 		"A measure of the goodness of fit of the model. Comparisons are \nonly valid when comparing different models for identical\nisopach data."),
-			
-			(statsFrame.expSegVolume_E, 				"The model's estimate for the volume of this segment of the tephra deposit."),
-
-			(statsFrame.powSuggestedProximalLimit_E,	"An estimate for the proximal limit of integration as described\nin Bonadonna and Houghton 2005"),
 		
-			(self.isopachFrame.loadFromFileButton,		"Load isopach data from a comma seperated value file of the form: \n\n\tthickness1,\u221AArea1\n\tthickness2,\u221AArea2\n\t...\n\nwith thickness in metres and \u221AArea in kilometres"),
+		tips = [
+			(self.modelFrame.weiNumberOfRuns_E,							True, "The number of possible sets of parameters that are generated. The final parameters returned are the set which best fit the data. See the instruction manual for further details."),
+			(self.modelFrame.weiIterationsPerRun_E,						True, "The number of times the current parameters are adjusted within each run. See the instruction manual for further details."),
+			(self.modelFrame.weiEstimatedTime_E,						True, "A rough estimate of the time required to execute this computation."),
+
+			(self.resultsFrame.statsFrame.totalEstimatedVolume_E, 		True, "The model's estimate for the total volume of the tephra deposit."),
+			(self.resultsFrame.statsFrame.relativeSquaredError_E, 		True, "A measure of the goodness of fit of the model. Comparisons are only valid when comparing different models for identical isopach data."),
+			(self.resultsFrame.statsFrame.expSegVolume_E, 				True, "The model's estimate for the volume of this segment of the tephra deposit."),
+			(self.resultsFrame.statsFrame.powSuggestedProximalLimit_E,	True, "An estimate for the proximal limit of integration as described in Bonadonna and Houghton 2005. Requires 4 or more isopachs."),
+			(self.resultsFrame.errorSurfaceFrame.errorResolutionE,		True, "The resolution of the error surface, which is modelled by a grid of 'resolution' x 'resolution' points."),
+			
+			(self.isopachFrame.loadFromFileButton,						False, "Load isopach data from a CSV file of the form: \n\tthickness1, \u221AArea1\n\tthickness2, \u221AArea2\n\t...\n\tthicknessN, \u221AAreaN\nwith thickness in metres and \u221AArea in kilometres"),
 		]
 
-		for target, tip in tips:
-			tooltip.createToolTip(target, tip)
+		for target, wrap, tip in tips:
+			if wrap:
+				tip = "\n".join(textwrap.wrap(tip, 60))
+			ToolTip(target, tip)

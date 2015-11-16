@@ -2,51 +2,42 @@
 @author: Michael Foord
 http://www.voidspace.org.uk/python/weblog
 '''
-from tkinter import Toplevel, TclError, LEFT, SOLID 
-from tkinter.ttk import Label
+import tkinter
 
 class ToolTip(object):
 
-    def __init__(self, widget):
+    def __init__(self, widget, text):
         self.widget = widget
-        self.tipwindow = None
+        self.window = None
         self.id = None
-        self.x = self.y = 0
 
-    def showtip(self, text):
-        "Display text in tooltip window"
-        self.text = text
-        if self.tipwindow or not self.text:
+        widget.bind('<Enter>', lambda e : self.show(text))
+        widget.bind('<Leave>', lambda e : self.hide())
+
+    def show(self, text):
+
+        if self.window or not text:
             return
-        
+
+        "Display text in tooltip window"
         x = self.widget.winfo_width() + self.widget.winfo_rootx() + 5
         y = self.widget.winfo_height() + self.widget.winfo_rooty() + 5
-        self.tipwindow = tw = Toplevel(self.widget)
-        tw.wm_overrideredirect(1)
-        tw.wm_geometry("+%d+%d" % (x, y))
+        self.window = tkinter.Toplevel(self.widget)
+        self.window.wm_overrideredirect(1)
+        self.window.wm_geometry("+%d+%d" % (x, y))
+        
         try:
             # For Mac OS
-            tw.tk.call("::tk::unsupported::MacWindowStyle",
-                       "style", tw._w,
-                       "help", "noActivates")
-        except TclError:
+            self.window.tk.call("::tk::unsupported::MacWindowStyle", "style", self.window._w, "help", "noActivates")
+        except tkinter.TclError:
             pass
-        label = Label(tw, text=self.text, justify=LEFT,
-                      background="#ffffe0", relief=SOLID, borderwidth=1,
-                      font=("tahoma", "8", "normal"))
-        label.pack(ipadx=1)
 
-    def hidetip(self):
-        tw = self.tipwindow
-        self.tipwindow = None
-        if tw:
-            tw.destroy()
+        label = tkinter.ttk.Label(self.window, text=text, background="#ffffe0", relief="solid", borderwidth=1, font=("tahoma", "8", "normal"))
+        label.grid(row=0, column=0, padx=3)
 
-def createToolTip(widget, text):
-    toolTip = ToolTip(widget)
-    def enter(event):
-        toolTip.showtip(text)
-    def leave(event):
-        toolTip.hidetip()
-    widget.bind('<Enter>', enter)
-    widget.bind('<Leave>', leave)
+    def hide(self):
+        if self.window:
+            self.window.destroy()
+            self.window = None
+
+   

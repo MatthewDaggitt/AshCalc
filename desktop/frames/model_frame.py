@@ -4,7 +4,6 @@ import numpy as np
 
 from desktop import settings
 from desktop import helper_functions
-from desktop import tooltip
 
 from desktop.settings import Model
 from desktop.custom_components import CustomEntry
@@ -35,7 +34,7 @@ class ModelFrame(LabelFrame):
 		## Exponential setup
 
 		self.expNumberOfSegments_L = Label(self,text="Number of segments: ")
-		self.expNumberOfSegments_E = Entry(self,width=5)
+		self.expNumberOfSegments_E = Entry(self,width=5, justify="right")
 
 		self.expNumberOfSegments_E.insert(0, settings.EXP_DEFAULT_NUMBER_OF_SEGMENTS)
 
@@ -44,9 +43,9 @@ class ModelFrame(LabelFrame):
 		## Power law setup
 
 		self.powProximalLimit_L = Label(self,text="Proximal limit of integration: ")
-		self.powProximalLimit_E = Entry(self,width=5)
+		self.powProximalLimit_E = Entry(self,width=5, justify="right")
 		self.powDistalLimit_L = Label(self,text="Distal limit of integration: ")
-		self.powDistalLimit_E = Entry(self,width=5)
+		self.powDistalLimit_E = Entry(self,width=5, justify="right")
 
 		self.powProximalLimit_E.insert(0, settings.POW_DEFAULT_PROXIMAL_LIMIT)
 		self.powDistalLimit_E.insert(0, settings.POW_DEFAULT_DISTAL_LIMIT)
@@ -57,23 +56,23 @@ class ModelFrame(LabelFrame):
 		## Weibull setup
 
 		self.weiNumberOfRuns_L = Label(self,text="Number of runs: ")
-		self.weiNumberOfRuns_E = Entry(self,width=5)
+		self.weiNumberOfRuns_E = Entry(self,width=5, justify="right")
 		self.weiIterationsPerRun_L = Label(self,text="Iterations per run: ")
-		self.weiIterationsPerRun_E = Entry(self,width=5)
+		self.weiIterationsPerRun_E = Entry(self,width=5, justify="right")
 
 		self.weiEstimatedTime_L = Label(self,text="Estimated time (s): ")
-		self.weiEstimatedTime_E = CustomEntry(self,width=5)
+		self.weiEstimatedTime_E = CustomEntry(self,width=5, justify="right")
 		self.weiEstimatedTime_E.setUserEditable(False)
 
 		self.weiLambdaLowerBoundL = Label(self,text="\u03BB lower bound:")
 		self.weiLambdaUpperBoundL = Label(self,text="\u03BB upper bound:")
-		self.weiLambdaLowerBoundE = Entry(self,width=5)
-		self.weiLambdaUpperBoundE = Entry(self,width=5)
+		self.weiLambdaLowerBoundE = Entry(self,width=5, justify="right")
+		self.weiLambdaUpperBoundE = Entry(self,width=5, justify="right")
 
 		self.weiKLowerBoundL = Label(self,text="k lower bound:")
 		self.weiKUpperBoundL = Label(self,text="k upper bound:")
-		self.weiKLowerBoundE = Entry(self,width=5)
-		self.weiKUpperBoundE = Entry(self,width=5)
+		self.weiKLowerBoundE = Entry(self,width=5, justify="right")
+		self.weiKUpperBoundE = Entry(self,width=5, justify="right")
 
 		self.weiNumberOfRuns_E.insert(0, settings.WEI_DEFAULT_NUMBER_OF_RUNS)
 		self.weiIterationsPerRun_E.insert(0, settings.WEI_DEFAULT_ITERATIONS_PER_RUN)
@@ -82,9 +81,6 @@ class ModelFrame(LabelFrame):
 		self.weiKLowerBoundE.insert(0, settings.WEI_DEFAULT_K_LOWER_BOUND)
 		self.weiKUpperBoundE.insert(0, settings.WEI_DEFAULT_K_UPPER_BOUND)
 
-		tooltip.createToolTip(self.weiNumberOfRuns_E,"The number of possible sets of parameters that are generated.\nThe final parameters returned are the set which best fit the data.\n\nSee the instruction manual for further details.");
-		tooltip.createToolTip(self.weiIterationsPerRun_E,"The number of times the current parameters are adjusted\nwithin each run.\n\nSee the instruction manual for further details.");
-		tooltip.createToolTip(self.weiEstimatedTime_E,"A rough estimate of the time required to execute this computation.");
 		
 		self.weiWidgets = [self.weiNumberOfRuns_L,self.weiNumberOfRuns_E,
 						   self.weiIterationsPerRun_L,self.weiIterationsPerRun_E,
@@ -132,9 +128,9 @@ class ModelFrame(LabelFrame):
 			self.weiLambdaUpperBoundE.grid(row=1,column=5,padx=(sX,bX),pady=5)
 			
 			self.weiKLowerBoundL.grid(row=0,column=6,padx=(bX,sX),pady=(self.topPadding,5),sticky="W")
-			self.weiKLowerBoundE.grid(row=0,column=7,padx=(sX,bX),pady=(self.topPadding,5))
+			self.weiKLowerBoundE.grid(row=0,column=7,padx=(sX,sX),pady=(self.topPadding,5))
 			self.weiKUpperBoundL.grid(row=1,column=6,padx=(bX,sX),pady=5,sticky="W")
-			self.weiKUpperBoundE.grid(row=1,column=7,padx=(sX,bX),pady=5)
+			self.weiKUpperBoundE.grid(row=1,column=7,padx=(sX,sX),pady=5)
 			
 			self.currentWidgets = self.weiWidgets
 	
@@ -187,14 +183,12 @@ class ModelFrame(LabelFrame):
 									self.weiLambdaLowerBoundE.get(),
 									"The lower bound for \u03BB must be a decimal",
 									"float")
-			lambdaLowerBound /= SQRT_PI
 			  
 			lambdaUpperBound = helper_functions.validateValue(
 									self.weiLambdaUpperBoundE.get(),
 									"The upper bound for \u03BB must be greater than the lower bound",
 									"float",
 									strictLowerBound=lambdaLowerBound)
-			lambdaUpperBound /= SQRT_PI
 			
 			kLowerBound = helper_functions.validateValue(
 									self.weiKLowerBoundE.get(),

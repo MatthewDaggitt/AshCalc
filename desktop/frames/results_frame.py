@@ -4,7 +4,7 @@ from copy import deepcopy
 import numpy as np
 
 import tkinter
-from tkinter.ttk import Frame, LabelFrame, Label, Button, Combobox, Separator
+from tkinter.ttk import Frame, LabelFrame, Label, Button, Combobox, Separator, Notebook
 
 import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg as FigureCanvas, NavigationToolbar2TkAgg as NavigationToolbar
@@ -17,9 +17,8 @@ from core.models.power_law import calculatePowerLawVolume
 from core.models.weibull import calculateWeibullVolume, calculateTheta
 from core import regression_methods
 
-from desktop import tooltip
 from desktop import helper_functions
-from desktop.custom_components import CustomEntry, ImprovedNotebook
+from desktop.custom_components import CustomEntry, ImprovedNotebook, CutDownNavigationToolbar
 from desktop.settings import Model
 
 ###########Config###########
@@ -36,7 +35,7 @@ ERROR_SURFACE_MAX_RESOLUTION = 100
 ERROR_SURFACE_MIN_RESOLUTION = 5
 ERROR_SURFACE_DEFAULT_RESOLUTION = 50
 
-NUMBER_OF_SF = 6
+NUMBER_OF_SF = 4
 
 class ResultsFrame(LabelFrame):
 	
@@ -45,13 +44,12 @@ class ResultsFrame(LabelFrame):
 
 	def __init__(self,parent):
 
-		LabelFrame.__init__(self, parent,text="Results", width=846, height=485)
+		LabelFrame.__init__(self, parent,text="Results", width=825, height=485)
 
 		# Terrible kludgy hack to force the app to stay the right size
 		# Need to work out how to remove
 		self.grid_propagate(False)
 		 
-
 
 		self.resultsDict = None
 		self.modelType = None
@@ -99,9 +97,8 @@ class ResultsFrame(LabelFrame):
 		self.currentParameters = resultsDict
 		self.defaultParameters = deepcopy(self.currentParameters)
 
-
 		self.statsFrame.grid(row=0,column=0,padx=10,pady=5,sticky="NESW")
-		self.graphNotebook.grid(row=0,column=1,padx=10, pady=5,sticky="NESW")
+		self.graphNotebook.grid(row=0,column=1,padx=10, pady=5,sticky="NEW")
 
 		if self.modelType == Model.EXP:
 			self._displayExp()
@@ -151,25 +148,30 @@ class ResultsFrame(LabelFrame):
 		fr.expSegVolume_L.grid(row=4,column=0,padx=10,sticky="W",pady=padY)
 		fr.expSegVolume_E.grid(row=4,column=1,padx=10,sticky="E")
 
-		fr.parameters_L.grid(row=5,column=0,padx=10,pady=padY,sticky="W")
+		fr.equation_L.grid(row=5,column=0,sticky="W",padx=10,pady=padY)
+		fr.equation_E.grid(row=5,column=1,padx=10,sticky="E")
+		fr.equation_L.configure(text="Segment equation:")
 
-		fr.expSegStartLimit_L.grid(row=6,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegStartLimit_E.grid(row=6,column=1,padx=10,sticky="E")
+		fr.parameters_L.grid(row=6,column=0,padx=10,pady=padY,sticky="W")
 
-		fr.expSegEndLimit_L.grid(row=7,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegEndLimit_E.grid(row=7,column=1,padx=10,sticky="E")
+		fr.expSegStartLimit_L.grid(row=7,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegStartLimit_E.grid(row=7,column=1,padx=10,sticky="E")
 
-		fr.expSegCoefficent_L.grid(row=8,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegCoefficent_E.grid(row=8,column=1,padx=10,sticky="E")
+		fr.expSegEndLimit_L.grid(row=8,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegEndLimit_E.grid(row=8,column=1,padx=10,sticky="E")
 
-		fr.expSegExponent_L.grid(row=9,column=0,sticky="W",padx=padX,pady=padY)
-		fr.expSegExponent_E.grid(row=9,column=1,padx=10,sticky="E")
+		fr.expSegCoefficent_L.grid(row=9,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegCoefficent_E.grid(row=9,column=1,padx=10,sticky="E")
 
-		
+		fr.expSegExponent_L.grid(row=10,column=0,sticky="W",padx=padX,pady=padY)
+		fr.expSegExponent_E.grid(row=10,column=1,padx=10,sticky="E")
+
 		# Recalculate buttons
-		fr.calculate_B.grid(row=10,column=0,padx=padX,pady=padY,sticky="W")
-		fr.reset_B.grid(row=10,column=1,padx=10,sticky="E")
+		fr.calculate_B.grid(row=11,column=0,padx=padX,pady=padY,sticky="W")
+		fr.reset_B.grid(row=11,column=1,padx=10,sticky="E")
 		
+		
+
 		self.graphNotebook.addFrame(self.regressionGraphFrame, text="Regression")
 
 	def _displayPow(self):
@@ -177,26 +179,33 @@ class ResultsFrame(LabelFrame):
 		padX = self.padX
 		padY = self.padY
 
-		fr.parameters_L.grid(row=2,column=0,padx=10,pady=padY,sticky="W")
+		fr.equation_L.grid(row=2,column=0,sticky="W",padx=10,pady=padY)
+		fr.equation_E.grid(row=2,column=1,padx=10,sticky="E")
+		fr.equation_L.configure(text="Equation:")
 
-		fr.powCoefficient_L.grid(row=3,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powCoefficient_E.grid(row=3,column=1,padx=10,sticky="E")
+		fr.parameters_L.grid(row=3,column=0,padx=10,pady=padY,sticky="W")
 
-		fr.powExponent_L.grid(row=4,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powExponent_E.grid(row=4,column=1,padx=10,sticky="E")
+		fr.powCoefficient_L.grid(row=4,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powCoefficient_E.grid(row=4,column=1,padx=10,sticky="E")
 
-		fr.powProximalLimit_L.grid(row=5,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powProximalLimit_E.grid(row=5,column=1,padx=10,sticky="E")
+		fr.powExponent_L.grid(row=5,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powExponent_E.grid(row=5,column=1,padx=10,sticky="E")
 
-		fr.powDistalLimit_L.grid(row=6,column=0,sticky="W",padx=padX,pady=padY)
-		fr.powDistalLimit_E.grid(row=6,column=1,padx=10,sticky="E")
+		fr.powProximalLimit_L.grid(row=6,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powProximalLimit_E.grid(row=6,column=1,padx=10,sticky="E")
 
-		fr.powSuggestedProximalLimit_L.grid(row=10,column=0,sticky="W",padx=10,pady=padY+20)
-		fr.powSuggestedProximalLimit_E.grid(row=10,column=1,padx=10,sticky="E")
+		fr.powDistalLimit_L.grid(row=7,column=0,sticky="W",padx=padX,pady=padY)
+		fr.powDistalLimit_E.grid(row=7,column=1,padx=10,sticky="E")
 
 		# Recalculate buttons
-		fr.calculate_B.grid(row=9,column=0,padx=padX,pady=padY,sticky="W")
-		fr.reset_B.grid(row=9,column=1,padx=10,sticky="E")
+		fr.calculate_B.grid(row=8,column=0,padx=padX,pady=padY,sticky="W")
+		fr.reset_B.grid(row=8,column=1,padx=10,sticky="E")
+
+		fr.powSuggestedProximalLimit_L.grid(row=9,column=0,sticky="W",padx=10,pady=padY)
+		fr.powSuggestedProximalLimit_E.grid(row=9,column=1,padx=10,sticky="E")
+
+		
+
 
 		self.graphNotebook.addFrame(self.regressionGraphFrame, text="Regression")
 		self.errorSurfaceFrame.update("c", "m", 0.0, 5.0, 0.0, 5.0)
@@ -206,20 +215,26 @@ class ResultsFrame(LabelFrame):
 		padX = self.padX
 		padY = self.padY
 
-		fr.parameters_L.grid(row=2,column=0,padx=10,pady=padY,sticky="W")
+		fr.equation_L.grid(row=2,column=0,sticky="W",padx=10,pady=padY)
+		fr.equation_E.grid(row=2,column=1,padx=10,sticky="E")
+		fr.equation_L.configure(text="Equation:")
 
-		fr.weiLambdaL.grid(row=3,column=0,padx=padX,pady=padY,sticky="W")
-		fr.weiLambdaE.grid(row=3,column=1,padx=10,sticky="E")
+		fr.parameters_L.grid(row=3,column=0,padx=10,pady=padY,sticky="W")
 
-		fr.weiKL.grid(row=4,column=0,padx=padX,pady=padY,sticky="W")
-		fr.weiKE.grid(row=4,column=1,padx=10,sticky="E")
+		fr.weiLambdaL.grid(row=4,column=0,padx=padX,pady=padY,sticky="W")
+		fr.weiLambdaE.grid(row=4,column=1,padx=10,sticky="E")
 
-		fr.weiThetaL.grid(row=5,column=0,padx=padX,pady=padY,sticky="W")
-		fr.weiThetaE.grid(row=5,column=1,padx=10,sticky="E")
+		fr.weiKL.grid(row=5,column=0,padx=padX,pady=padY,sticky="W")
+		fr.weiKE.grid(row=5,column=1,padx=10,sticky="E")
+
+		fr.weiThetaL.grid(row=6,column=0,padx=padX,pady=padY,sticky="W")
+		fr.weiThetaE.grid(row=6,column=1,padx=10,sticky="E")
 
 		# Recalculate buttons
-		fr.calculate_B.grid(row=6,column=0,padx=padX,pady=padY,sticky="W")
-		fr.reset_B.grid(row=6,column=1,padx=10,sticky="E")
+		fr.calculate_B.grid(row=7,column=0,padx=padX,pady=padY,sticky="W")
+		fr.reset_B.grid(row=7,column=1,padx=10,sticky="E")
+
+		
 
 		parameterLimits = self.currentParameters["limits"]
 		lambdaLower, lambdaUpper = parameterLimits[0]
@@ -450,7 +465,7 @@ class ResultsFrame(LabelFrame):
 			messagebox.showerror("Calculation error", ve.args[0])
 			return
 		
-		self.graphNotebook.addFrame(self.errorSurfaceGraphFrame,text="Error surface")
+		self.graphNotebook.addFrame(self.errorSurfaceGraphFrame, text="Error surface")
 		if self.errorSurfaceFrame.xSymbol == "\u03BB":
 			self.errorSurfaceGraphFrame.axes.set_xlabel("$\lambda$")
 		else:
@@ -469,18 +484,19 @@ class ResultsFrame(LabelFrame):
 				theta = calculateTheta(xs,ys,lamb,k)
 				def thicknessFunction(x):
 					try:
-						return math.exp(math.log(theta)+(k-2)*math.log(x/lamb)-(x/lamb)**k)
+						return np.exp(np.log(theta)+(k-2)*np.log(x/lamb)-(x/lamb)**k)
 					except FloatingPointError:
 						return 0
 				mrse = regression_methods.meanRelativeSquaredError(xs, ys, thicknessFunction)
 				return math.log(mrse)
 
-
 		self.errorSurfaceGraphFrame.axes.set_ylabel(self.errorSurfaceFrame.ySymbol)
 		self.errorSurfaceGraphFrame.clear()
-		self.errorSurfaceGraphFrame.plotSurface(self.currentParameters["errorFunction"], xLL, xUL, yLL, yUL, resolution)
-		self.graphNotebook.selectFrame(self.errorSurfaceGraphFrame)
+		self.errorSurfaceGraphFrame.plotSurface(errorFunction, xLL, xUL, yLL, yUL, resolution)
+
+		self.graphNotebook.select(self.errorSurfaceGraphFrame)
 	
+
 	def _parametersReset(self,event):
 		self.currentParameters = deepcopy(self.defaultParameters)
 		self._updateDisplay()
@@ -538,27 +554,27 @@ class StatsFrame(LabelFrame):
 		
 		# Total volume
 		self.totalEstimatedVolume_L = Label(self,text="Estimated total volume (km\u00B3): ")
-		self.totalEstimatedVolume_E = CustomEntry(self,width=10)
+		self.totalEstimatedVolume_E = CustomEntry(self,width=10,justify="right")
 		self.totalEstimatedVolume_E.setUserEditable(False)
-		self.totalEstimatedVolume_E.grid(row=0,column=1,padx=10,sticky="E")
-		self.totalEstimatedVolume_L.grid(row=0,column=0,sticky="W",padx=10,pady=0)
+		self.totalEstimatedVolume_E.grid(row=0,column=1,padx=10,pady=padY,sticky="E")
+		self.totalEstimatedVolume_L.grid(row=0,column=0,sticky="W",padx=10)
 		
 		# Relative squared error
 		self.relativeSquaredError_L = Label(self,text="Mean relative squared error: ")
 		self.relativeSquaredError_L.grid(row=1,column=0,sticky="W",padx=10,pady=padY)
-		self.relativeSquaredError_E = CustomEntry(self,width=10)
+		self.relativeSquaredError_E = CustomEntry(self,width=10,justify="right")
 		self.relativeSquaredError_E.grid(row=1,column=1,padx=10,sticky="E")
 		self.relativeSquaredError_E.setUserEditable(False)
 		
 		# Equation
 		self.equation_L = Label(self,text="Equation: ")
-		self.equation_E = CustomEntry(self,width=10)
+		self.equation_E = CustomEntry(self,width=10,justify="right")
 		self.equation_E.setUserEditable(False)
 
 		# General
 		self.parameters_L = Label(self,text="Parameters:")
-		self.calculate_B = Button(self,text="Recalculate",width=10)
-		self.reset_B = Button(self,text="Reset",width=10)
+		self.calculate_B = Button(self,text="Recalculate",width=12)
+		self.reset_B = Button(self,text="Reset",width=8)
 
 
 
@@ -571,24 +587,24 @@ class StatsFrame(LabelFrame):
 
 		# Segment volume
 		self.expSegVolume_L = Label(self,text="Segment volume (km\u00B3): ")
-		self.expSegVolume_E = CustomEntry(self,width=10)
+		self.expSegVolume_E = CustomEntry(self,width=10, justify="right")
 		self.expSegVolume_E.setUserEditable(False)
 		
 		# Segment start
 		self.expSegStartLimit_L = Label(self,text="Start of segment: ")
-		self.expSegStartLimit_E = CustomEntry(self,width=10)
+		self.expSegStartLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Segment end
 		self.expSegEndLimit_L = Label(self,text="End of segment: ")
-		self.expSegEndLimit_E = CustomEntry(self,width=10)
+		self.expSegEndLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Segment coefficient
 		self.expSegCoefficent_L = Label(self,text="Segment coefficient, c: ")
-		self.expSegCoefficent_E = CustomEntry(self,width=10)
+		self.expSegCoefficent_E = CustomEntry(self,width=10, justify="right")
 		
 		# Segment exponent
 		self.expSegExponent_L = Label(self,text="Segment exponent, m: ")
-		self.expSegExponent_E = CustomEntry(self,width=10)
+		self.expSegExponent_E = CustomEntry(self,width=10, justify="right")
 		
 		
 
@@ -598,23 +614,23 @@ class StatsFrame(LabelFrame):
 
 		# Coefficient
 		self.powCoefficient_L = Label(self,text="Coefficient, c: ")
-		self.powCoefficient_E = CustomEntry(self,width=10)
+		self.powCoefficient_E = CustomEntry(self,width=10, justify="right")
 		
 		# Exponent
 		self.powExponent_L = Label(self,text="Exponent, m: ")
-		self.powExponent_E = CustomEntry(self,width=10)
+		self.powExponent_E = CustomEntry(self,width=10, justify="right")
 		
 		# Proximal limit
 		self.powProximalLimit_L = Label(self,text="Proximal limit: ")
-		self.powProximalLimit_E = CustomEntry(self,width=10)
+		self.powProximalLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Distal limit
 		self.powDistalLimit_L = Label(self,text="Distal limit: ")
-		self.powDistalLimit_E = CustomEntry(self,width=10)
+		self.powDistalLimit_E = CustomEntry(self,width=10, justify="right")
 		
 		# Suggested proximal limit
 		self.powSuggestedProximalLimit_L = Label(self,text="Suggested proximal limit: ")
-		self.powSuggestedProximalLimit_E = CustomEntry(self,width=10)
+		self.powSuggestedProximalLimit_E = CustomEntry(self,width=10, justify="right")
 		self.powSuggestedProximalLimit_E.setUserEditable(False)
 
 		
@@ -625,15 +641,15 @@ class StatsFrame(LabelFrame):
 
 		# lambda
 		self.weiLambdaL = Label(self,text="Estimated \u03BB: ")
-		self.weiLambdaE = CustomEntry(self,width=10)
+		self.weiLambdaE = CustomEntry(self,width=10, justify="right")
 		
 		# k
 		self.weiKL = Label(self,text="Estimated k: ")
-		self.weiKE = CustomEntry(self,width=10)
+		self.weiKE = CustomEntry(self,width=10, justify="right")
 		
 		# theta
 		self.weiThetaL = Label(self,text="Estimated \u03B8: ")
-		self.weiThetaE = CustomEntry(self,width=10)
+		self.weiThetaE = CustomEntry(self,width=10, justify="right")
 		
 
 
@@ -688,40 +704,39 @@ class ErrorSurfaceFrame(LabelFrame):
 	def __init__(self,parent):
 		LabelFrame.__init__(self, parent, borderwidth=0)
 		
+		entryWidth = 7
 		xPad1 = 30
-		xPad2 = 15
+		xPad2 = 5
 		
 		self.errorXLowerLimitL = Label(self)
-		self.errorXLowerLimitE = CustomEntry(self,width=5)
+		self.errorXLowerLimitE = CustomEntry(self,width=entryWidth,justify="right")
 		self.errorXLowerLimitL.grid(row=0,column=0,padx=(10,xPad2),pady=5,sticky="W")
 		self.errorXLowerLimitE.grid(row=0,column=1,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorXUpperLimitL = Label(self)
-		self.errorXUpperLimitE = CustomEntry(self,width=5)
-		self.errorXUpperLimitL.grid(row=0,column=2,padx=(xPad1,xPad2),pady=5,sticky="W")
-		self.errorXUpperLimitE.grid(row=0,column=3,padx=(xPad2,xPad1),pady=5)
+		self.errorXUpperLimitE = CustomEntry(self,width=entryWidth,justify="right")
+		self.errorXUpperLimitL.grid(row=1,column=0,padx=(10,xPad2),pady=5,sticky="W")
+		self.errorXUpperLimitE.grid(row=1,column=1,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorYLowerLimitL = Label(self)
-		self.errorYLowerLimitE = CustomEntry(self,width=5)
-		self.errorYLowerLimitL.grid(row=1,column=0,padx=(10,xPad2),pady=5,sticky="W")
-		self.errorYLowerLimitE.grid(row=1,column=1,padx=(xPad2,xPad1),pady=5)
+		self.errorYLowerLimitE = CustomEntry(self,width=entryWidth,justify="right")
+		self.errorYLowerLimitL.grid(row=0,column=2,padx=(xPad1,xPad2),pady=5,sticky="W")
+		self.errorYLowerLimitE.grid(row=0,column=3,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorYUpperLimitL = Label(self)
-		self.errorYUpperLimitE = CustomEntry(self,width=5)
+		self.errorYUpperLimitE = CustomEntry(self,width=entryWidth,justify="right")
 		self.errorYUpperLimitL.grid(row=1,column=2,padx=(xPad1,xPad2),pady=5,sticky="W")
 		self.errorYUpperLimitE.grid(row=1,column=3,padx=(xPad2,xPad1),pady=5)
 		
 		self.errorResolutionL = Label(self,text="Resolution: ")
-		self.errorResolutionE = CustomEntry(self,width=5)
+		self.errorResolutionE = CustomEntry(self,width=entryWidth,justify="right")
 		self.errorResolutionE.insert(0,ERROR_SURFACE_DEFAULT_RESOLUTION)
 		self.errorResolutionL.grid(row=0,column=4,padx=(xPad1,xPad2),pady=5,sticky="W")
 		self.errorResolutionE.grid(row=0,column=5,padx=(xPad2,xPad1),pady=5,sticky="E")
-		tooltip.createToolTip(self.errorResolutionE,"The resolution of the error surface, which is modelled by\na grid of 'resolution' x 'resolution' points.");
 		
 		self.errorSurfaceB = Button(self,text=" Calculate error surface ")
 		self.errorSurfaceB.grid(row=1,column=4,columnspan=2,padx=(xPad1,xPad1),sticky="EW")
 		self.errorSurfaceB.configure(state=tkinter.ACTIVE)
-		self.update("x","y","","","","")
 		
 	def update(self,xSymbol,ySymbol,xLL,xUL,yLL,yUL):
 		
@@ -779,15 +794,15 @@ class GraphFrame(Frame):
 
 		self.dim = dim
 
-		self.figure = pyplot.Figure(figsize=(5.8,3.5), facecolor=(240/255,240/255,237/255))
+		self.figure = pyplot.Figure(figsize=(5.5,3.2), facecolor=(240/255,240/255,237/255))
 		self.figure.subplots_adjust(left=0.15, bottom=0.2)
 
 		self.canvas = FigureCanvas(self.figure, master=self)
-		self.canvas.get_tk_widget().grid(row=0,column=0,sticky="W")
+		self.canvas.get_tk_widget().pack()
 		self.canvas.get_tk_widget().configure(highlightthickness=0)
 
-		#toolbar = CutDownNavigationToolbar(self.canvas,self)
-		#toolbar.grid(row=1,column=2,sticky="W")
+		toolbar = CutDownNavigationToolbar(self.canvas,self)
+		toolbar.pack()
 		
 		if dim == 2:
 			self.axes = self.figure.add_subplot(1,1,1)

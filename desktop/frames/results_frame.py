@@ -63,7 +63,7 @@ class ResultsFrame(LabelFrame):
 		
 		def onComboBoxSelect(e):
 			self.currentSegment = e.widget.current()
-			self._updateDisplay()
+			self._updateDisplay(True)
 		self.statsFrame.expSeg_CB.bind("<<ComboboxSelected>>", onComboBoxSelect)
 		
 		# Error frame
@@ -115,21 +115,22 @@ class ResultsFrame(LabelFrame):
 				self.config(text="Results (Weibull)")
 
 
-		self._updateDisplay()
+		self._updateDisplay(False)
 		
-	def _updateDisplay(self):
+	def _updateDisplay(self, comboboxUpdate):
 		
-		self.modelGraphFrame.clear()
-		self.regressionGraphFrame.clear()
+		if not comboboxUpdate:
+			self.modelGraphFrame.clear()
+			self.regressionGraphFrame.clear()
 
-		thicknessM = [isopach.thicknessM for isopach in self.isopachs]
-		sqrtArea = [isopach.sqrtAreaKM for isopach in self.isopachs]
+			thicknessM = [isopach.thicknessM for isopach in self.isopachs]
+			sqrtArea = [isopach.sqrtAreaKM for isopach in self.isopachs]
 
-		self.modelGraphFrame.plotScatter(sqrtArea,thicknessM,True)
-		self.modelGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
+			self.modelGraphFrame.plotScatter(sqrtArea,thicknessM,True)
+			self.modelGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")	
 		
 		if self.modelType == Model.EXP:
-			self._updateExp()
+			self._updateExp(comboboxUpdate)
 		elif self.modelType == Model.POW:
 			self._updatePow()
 		elif self.modelType == Model.WEI:
@@ -241,7 +242,7 @@ class ResultsFrame(LabelFrame):
 		kLower, kUpper = parameterLimits[1]
 		self.errorSurfaceFrame.update("\u03BB", "k", lambdaLower, lambdaUpper, kLower, kUpper)
 
-	def _updateExp(self):
+	def _updateExp(self, comboboxUpdate):
 		
 		n = self.currentParameters["numberOfSegments"]
 		coefficients = self.currentParameters["segmentCoefficients"]
@@ -309,24 +310,25 @@ class ResultsFrame(LabelFrame):
 		## Graphs ##
 		############
 		
-		# Model
+		if not comboboxUpdate:
+			# Model
 
-		endXs = limits[1:-1] + [1.5*max(self.sqrtAreaKM)-0.5*min(self.sqrtAreaKM)]
+			endXs = limits[1:-1] + [1.5*max(self.sqrtAreaKM)-0.5*min(self.sqrtAreaKM)]
 
-		for i in range(n):
-			xs = helper_functions.getStaggeredPoints(limits[i], endXs[i], MODEL_PLOTTING_PRECISION)
-			ys = [thicknessFunction(x) for x in xs]
-			self.modelGraphFrame.plotFilledLine(xs, ys, color=colours[i])
+			for i in range(n):
+				xs = helper_functions.getStaggeredPoints(limits[i], endXs[i], MODEL_PLOTTING_PRECISION)
+				ys = [thicknessFunction(x) for x in xs]
+				self.modelGraphFrame.plotFilledLine(xs, ys, color=colours[i])
 
-		# Regression
-		logThicknessM = [np.log(t) for t in self.thicknessM]
-		self.regressionGraphFrame.plotScatter(self.sqrtAreaKM, logThicknessM, False)
-		self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
-		
-		for i in range(n):
-			xs = [limits[i], endXs[i]]
-			ys = [np.log(thicknessFunction(x)) for x in xs]
-			self.regressionGraphFrame.plotLine(xs,ys, color=colours[i])
+			# Regression
+			logThicknessM = [np.log(t) for t in self.thicknessM]
+			self.regressionGraphFrame.plotScatter(self.sqrtAreaKM, logThicknessM, False)
+			self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
+			
+			for i in range(n):
+				xs = [limits[i], endXs[i]]
+				ys = [np.log(thicknessFunction(x)) for x in xs]
+				self.regressionGraphFrame.plotLine(xs,ys, color=colours[i])
 		
 	def _updatePow(self):
 		
@@ -499,7 +501,7 @@ class ResultsFrame(LabelFrame):
 
 	def _parametersReset(self,event):
 		self.currentParameters = deepcopy(self.defaultParameters)
-		self._updateDisplay()
+		self._updateDisplay(False)
 	
 	def _parametersChanged(self,event):
 		
@@ -522,7 +524,7 @@ class ResultsFrame(LabelFrame):
 			self.currentParameters["k"] = newValues["k"]
 			self.currentParameters["theta"] = newValues["theta"]
 
-		self._updateDisplay()
+		self._updateDisplay(False)
 	
 	def clear(self):
 

@@ -317,7 +317,7 @@ class ResultsFrame(LabelFrame):
 
 			for i in range(n):
 				xs = helper_functions.getStaggeredPoints(limits[i], endXs[i], MODEL_PLOTTING_PRECISION)
-				ys = [thicknessFunction(x) for x in xs]
+				ys = [coefficients[i]*math.exp(-exponents[i]*x) for x in xs]
 				self.modelGraphFrame.plotFilledLine(xs, ys, color=colours[i])
 
 			# Regression

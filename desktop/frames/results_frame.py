@@ -81,7 +81,7 @@ class ResultsFrame(LabelFrame):
 		self.modelGraphFrame.axes.set_ylabel(r'$thickness(m)$')
 
 		self.regressionGraphFrame = GraphFrame(self.graphNotebook, dim=2)
-		self.regressionGraphFrame.axes.set_ylabel(r'$\ln{(thickness(m))}$')
+		self.regressionGraphFrame.axes.set_ylabel(r'$\log{(thickness(m))}$')
 		
 		self.errorSurfaceGraphFrame = GraphFrame(self.graphNotebook, dim=3)
 		self.errorSurfaceGraphFrame.axes.set_zlabel(r'$error$')

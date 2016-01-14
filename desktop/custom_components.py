@@ -2,6 +2,7 @@ import tkinter
 from tkinter.ttk import Entry, Notebook, Frame, Scrollbar
 from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
 
+from desktop import helper_functions
 
 class CutDownNavigationToolbar(NavigationToolbar2TkAgg):
 	# only display the buttons needed
@@ -35,7 +36,27 @@ class CustomEntry(Entry):
 		self.insert(0,text)
 		if not self.userEditable:
 			self.config(state="readonly")
-	
+
+class NumericEntry(CustomEntry):
+
+	trueValue = None
+	sf = None
+
+	def setSF(self, sf):
+		self.sf = sf
+
+	def insertNew(self,value):
+		self.trueValue = value
+		value = helper_functions.roundToSF(value, self.sf)
+		super(NumericEntry, self).insertNew(value)
+
+	def get(self):
+		value = super(CustomEntry, self).get()
+		if helper_functions.roundToSF(self.trueValue, self.sf) == value:
+			return self.trueValue
+		else:
+			return value
+
 class ImprovedNotebook(Notebook):
 	
 	def __init__(self,*args,**kwargs):

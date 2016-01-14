@@ -17,6 +17,8 @@ class IsopachFrame(LabelFrame):
     buttonWidth = 15
     buttonPadding = 7
 
+    removedEntriesStack = []
+
     def __init__(self,parent,calculationTimeEstimationFunction):
         
         LabelFrame.__init__(self,parent,text="Isopachs",borderwidth=5)
@@ -76,6 +78,14 @@ class IsopachFrame(LabelFrame):
     
     def addIsopach(self,event):
         row = self.createRow(self.numberOfIsopachs)
+
+        if(len(self.removedEntriesStack) > 0):
+            entry = self.removedEntriesStack.pop()
+
+            row[1][1].set(entry[0])
+            row[2][1].set(entry[1])
+            row[3][1].set(entry[2])
+
         self.rows.append(row)
         self.numberOfIsopachs += 1
         self.calculationTimeEstimationFunction(None)
@@ -83,12 +93,20 @@ class IsopachFrame(LabelFrame):
     def removeIsopach(self,event):
         if self.numberOfIsopachs > MINIMUM_NUMBER_OF_ISOPACHS:
             row = self.rows[-1]
-            for wg,_ in row:
+            
+
+            for wg,var in row:
+                
                 wg.grid_remove()
             self.numberOfIsopachs -= 1
             self.rows = self.rows[:self.numberOfIsopachs]
             self.calculationTimeEstimationFunction(None)
-    
+
+            rowValues = []
+            for _,var in row[1:]:
+                rowValues.append(var.get())
+            self.removedEntriesStack.append(rowValues)    
+
     def getData(self):
         values = [(thicknessVar.get(), sqrtAreaVar.get(), includeVar.get()) for (_,_),(_,thicknessVar),(_,sqrtAreaVar),(_,includeVar) in self.rows]
         isopachs = []

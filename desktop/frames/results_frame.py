@@ -18,7 +18,7 @@ from core.models.weibull import calculateWeibullVolume, calculateTheta
 from core import regression_methods
 
 from desktop import helper_functions
-from desktop.custom_components import CustomEntry, ImprovedNotebook, CutDownNavigationToolbar
+from desktop.custom_components import NumericEntry, CustomEntry, ImprovedNotebook, CutDownNavigationToolbar
 from desktop.settings import Model
 
 ###########Config###########
@@ -63,7 +63,7 @@ class ResultsFrame(LabelFrame):
 		
 		def onComboBoxSelect(e):
 			self.currentSegment = e.widget.current()
-			self._updateDisplay()
+			self._updateDisplay(True)
 		self.statsFrame.expSeg_CB.bind("<<ComboboxSelected>>", onComboBoxSelect)
 		
 		# Error frame
@@ -115,21 +115,22 @@ class ResultsFrame(LabelFrame):
 				self.config(text="Results (Weibull)")
 
 
-		self._updateDisplay()
+		self._updateDisplay(False)
 		
-	def _updateDisplay(self):
+	def _updateDisplay(self, comboboxUpdate):
 		
-		self.modelGraphFrame.clear()
-		self.regressionGraphFrame.clear()
+		if not comboboxUpdate:
+			self.modelGraphFrame.clear()
+			self.regressionGraphFrame.clear()
 
-		thicknessM = [isopach.thicknessM for isopach in self.isopachs]
-		sqrtArea = [isopach.sqrtAreaKM for isopach in self.isopachs]
+			thicknessM = [isopach.thicknessM for isopach in self.isopachs]
+			sqrtArea = [isopach.sqrtAreaKM for isopach in self.isopachs]
 
-		self.modelGraphFrame.plotScatter(sqrtArea,thicknessM,True)
-		self.modelGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
+			self.modelGraphFrame.plotScatter(sqrtArea,thicknessM,True)
+			self.modelGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")	
 		
 		if self.modelType == Model.EXP:
-			self._updateExp()
+			self._updateExp(comboboxUpdate)
 		elif self.modelType == Model.POW:
 			self._updatePow()
 		elif self.modelType == Model.WEI:
@@ -241,7 +242,7 @@ class ResultsFrame(LabelFrame):
 		kLower, kUpper = parameterLimits[1]
 		self.errorSurfaceFrame.update("\u03BB", "k", lambdaLower, lambdaUpper, kLower, kUpper)
 
-	def _updateExp(self):
+	def _updateExp(self, comboboxUpdate):
 		
 		n = self.currentParameters["numberOfSegments"]
 		coefficients = self.currentParameters["segmentCoefficients"]
@@ -257,24 +258,24 @@ class ResultsFrame(LabelFrame):
 		# Segment start
 		start = limits[self.currentSegment]
 		startStr = helper_functions.roundToSF(start, NUMBER_OF_SF)
-		fr.expSegStartLimit_E.insertNew(startStr)
+		fr.expSegStartLimit_E.insertNew(start)
 		fr.expSegStartLimit_E.setUserEditable(self.currentSegment != 0)
 
 		# Segment end
 		end = limits[self.currentSegment+1]
 		endStr = helper_functions.roundToSF(end, NUMBER_OF_SF)
-		fr.expSegEndLimit_E.insertNew(endStr)
+		fr.expSegEndLimit_E.insertNew(end)
 		fr.expSegEndLimit_E.setUserEditable(self.currentSegment != n-1)
 
 		# Segment coefficient
 		coefficient = coefficients [self.currentSegment]
 		coefficientStr = helper_functions.roundToSF(coefficient, NUMBER_OF_SF)
-		fr.expSegCoefficent_E.insertNew(coefficientStr)
+		fr.expSegCoefficent_E.insertNew(coefficient)
 		
 		# Segment exponent
 		exponent = exponents[self.currentSegment]
 		exponentStr = helper_functions.roundToSF(exponent, NUMBER_OF_SF)
-		fr.expSegExponent_E.insertNew(exponentStr)
+		fr.expSegExponent_E.insertNew(exponent)
 		
 		# Segment volume
 		segmentVolumes = [calculateExponentialSegmentVolume(coefficients[i], exponents[i], limits[i], limits[i+1]) for i in range(n)]
@@ -309,24 +310,25 @@ class ResultsFrame(LabelFrame):
 		## Graphs ##
 		############
 		
-		# Model
+		if not comboboxUpdate:
+			# Model
 
-		endXs = limits[1:-1] + [1.5*max(self.sqrtAreaKM)-0.5*min(self.sqrtAreaKM)]
+			endXs = limits[1:-1] + [1.5*max(self.sqrtAreaKM)-0.5*min(self.sqrtAreaKM)]
 
-		for i in range(n):
-			xs = helper_functions.getStaggeredPoints(limits[i], endXs[i], MODEL_PLOTTING_PRECISION)
-			ys = [thicknessFunction(x) for x in xs]
-			self.modelGraphFrame.plotFilledLine(xs, ys, color=colours[i])
+			for i in range(n):
+				xs = helper_functions.getStaggeredPoints(limits[i], endXs[i], MODEL_PLOTTING_PRECISION)
+				ys = [coefficients[i]*math.exp(-exponents[i]*x) for x in xs]
+				self.modelGraphFrame.plotFilledLine(xs, ys, color=colours[i])
 
-		# Regression
-		logThicknessM = [np.log(t) for t in self.thicknessM]
-		self.regressionGraphFrame.plotScatter(self.sqrtAreaKM, logThicknessM, False)
-		self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
-		
-		for i in range(n):
-			xs = [limits[i], endXs[i]]
-			ys = [np.log(thicknessFunction(x)) for x in xs]
-			self.regressionGraphFrame.plotLine(xs,ys, color=colours[i])
+			# Regression
+			logThicknessM = [np.log(t) for t in self.thicknessM]
+			self.regressionGraphFrame.plotScatter(self.sqrtAreaKM, logThicknessM, False)
+			self.regressionGraphFrame.axes.set_xlabel(r"$\sqrt{Area}$")
+			
+			for i in range(n):
+				xs = [limits[i], endXs[i]]
+				ys = [np.log(thicknessFunction(x)) for x in xs]
+				self.regressionGraphFrame.plotLine(xs,ys, color=colours[i])
 		
 	def _updatePow(self):
 		
@@ -339,22 +341,22 @@ class ResultsFrame(LabelFrame):
 		# Coefficient
 		c = self.currentParameters["coefficient"]
 		coefficientStr = helper_functions.roundToSF(c, NUMBER_OF_SF)
-		fr.powCoefficient_E.insertNew(coefficientStr)
+		fr.powCoefficient_E.insertNew(c)
 
 		# Exponent
 		m = self.currentParameters["exponent"] 
 		exponentStr = helper_functions.roundToSF(m, NUMBER_OF_SF)
-		fr.powExponent_E.insertNew(exponentStr)
+		fr.powExponent_E.insertNew(m)
 
 		# Proximal limit
 		proximalLimitKM = self.currentParameters["proximalLimitKM"]
 		proximalLimitStr = helper_functions.roundToSF(proximalLimitKM, NUMBER_OF_SF)
-		fr.powProximalLimit_E.insertNew(proximalLimitStr)
+		fr.powProximalLimit_E.insertNew(proximalLimitKM)
 		
 		# Distal limit
 		distalLimitKM = self.currentParameters["distalLimitKM"]
 		distalLimitStr = helper_functions.roundToSF(distalLimitKM, NUMBER_OF_SF)
-		fr.powDistalLimit_E.insertNew(distalLimitStr)
+		fr.powDistalLimit_E.insertNew(distalLimitKM)
 		
 		# Volume
 		volume = calculatePowerLawVolume(c, m, proximalLimitKM, distalLimitKM)
@@ -414,17 +416,17 @@ class ResultsFrame(LabelFrame):
 		# lambda
 		lamb = self.currentParameters["lambda"]
 		lambdaStr = helper_functions.roundToSF(lamb, NUMBER_OF_SF)
-		fr.weiLambdaE.insertNew(lambdaStr)
+		fr.weiLambdaE.insertNew(lamb)
 
 		# k
 		k = self.currentParameters["k"]
 		kStr = helper_functions.roundToSF(k, NUMBER_OF_SF)
-		fr.weiKE.insertNew(kStr)
+		fr.weiKE.insertNew(k)
 
 		# theta
 		theta = self.currentParameters["theta"]
 		thetaStr = helper_functions.roundToSF(theta, NUMBER_OF_SF)
-		fr.weiThetaE.insertNew(thetaStr)
+		fr.weiThetaE.insertNew(theta)
 
 		# Volume
 		volume = calculateWeibullVolume(lamb, k, theta)
@@ -499,7 +501,7 @@ class ResultsFrame(LabelFrame):
 
 	def _parametersReset(self,event):
 		self.currentParameters = deepcopy(self.defaultParameters)
-		self._updateDisplay()
+		self._updateDisplay(False)
 	
 	def _parametersChanged(self,event):
 		
@@ -522,7 +524,7 @@ class ResultsFrame(LabelFrame):
 			self.currentParameters["k"] = newValues["k"]
 			self.currentParameters["theta"] = newValues["theta"]
 
-		self._updateDisplay()
+		self._updateDisplay(False)
 	
 	def clear(self):
 
@@ -587,25 +589,28 @@ class StatsFrame(LabelFrame):
 
 		# Segment volume
 		self.expSegVolume_L = Label(self,text="Segment volume (km\u00B3): ")
-		self.expSegVolume_E = CustomEntry(self,width=10, justify="right")
+		self.expSegVolume_E = CustomEntry(self, width=10, justify="right")
 		self.expSegVolume_E.setUserEditable(False)
 		
 		# Segment start
 		self.expSegStartLimit_L = Label(self,text="Start of segment: ")
-		self.expSegStartLimit_E = CustomEntry(self,width=10, justify="right")
-		
+		self.expSegStartLimit_E = NumericEntry(self, width=10, justify="right")
+		self.expSegStartLimit_E.setSF(NUMBER_OF_SF)
+
 		# Segment end
 		self.expSegEndLimit_L = Label(self,text="End of segment: ")
-		self.expSegEndLimit_E = CustomEntry(self,width=10, justify="right")
-		
+		self.expSegEndLimit_E = NumericEntry(self, width=10, justify="right")
+		self.expSegEndLimit_E.setSF(NUMBER_OF_SF)
+
 		# Segment coefficient
 		self.expSegCoefficent_L = Label(self,text="Segment coefficient, c: ")
-		self.expSegCoefficent_E = CustomEntry(self,width=10, justify="right")
-		
+		self.expSegCoefficent_E = NumericEntry(self, width=10, justify="right")
+		self.expSegCoefficent_E.setSF(NUMBER_OF_SF)
+
 		# Segment exponent
 		self.expSegExponent_L = Label(self,text="Segment exponent, m: ")
-		self.expSegExponent_E = CustomEntry(self,width=10, justify="right")
-		
+		self.expSegExponent_E = NumericEntry(self, width=10, justify="right")
+		self.expSegExponent_E.setSF(NUMBER_OF_SF)
 		
 
 		#########
@@ -614,20 +619,24 @@ class StatsFrame(LabelFrame):
 
 		# Coefficient
 		self.powCoefficient_L = Label(self,text="Coefficient, c: ")
-		self.powCoefficient_E = CustomEntry(self,width=10, justify="right")
-		
+		self.powCoefficient_E = NumericEntry(self,width=10, justify="right")
+		self.powCoefficient_E.setSF(NUMBER_OF_SF)
+
 		# Exponent
 		self.powExponent_L = Label(self,text="Exponent, m: ")
-		self.powExponent_E = CustomEntry(self,width=10, justify="right")
-		
+		self.powExponent_E = NumericEntry(self,width=10, justify="right")
+		self.powExponent_E.setSF(NUMBER_OF_SF)
+
 		# Proximal limit
 		self.powProximalLimit_L = Label(self,text="Proximal limit: ")
-		self.powProximalLimit_E = CustomEntry(self,width=10, justify="right")
-		
+		self.powProximalLimit_E = NumericEntry(self,width=10, justify="right")
+		self.powProximalLimit_E.setSF(NUMBER_OF_SF)
+
 		# Distal limit
 		self.powDistalLimit_L = Label(self,text="Distal limit: ")
-		self.powDistalLimit_E = CustomEntry(self,width=10, justify="right")
-		
+		self.powDistalLimit_E = NumericEntry(self,width=10, justify="right")
+		self.powDistalLimit_E.setSF(NUMBER_OF_SF)
+
 		# Suggested proximal limit
 		self.powSuggestedProximalLimit_L = Label(self,text="Suggested proximal limit: ")
 		self.powSuggestedProximalLimit_E = CustomEntry(self,width=10, justify="right")
@@ -641,16 +650,18 @@ class StatsFrame(LabelFrame):
 
 		# lambda
 		self.weiLambdaL = Label(self,text="Estimated \u03BB: ")
-		self.weiLambdaE = CustomEntry(self,width=10, justify="right")
-		
+		self.weiLambdaE = NumericEntry(self,width=10, justify="right")
+		self.weiLambdaE.setSF(NUMBER_OF_SF)
+
 		# k
 		self.weiKL = Label(self,text="Estimated k: ")
-		self.weiKE = CustomEntry(self,width=10, justify="right")
-		
+		self.weiKE = NumericEntry(self,width=10, justify="right")
+		self.weiKE.setSF(NUMBER_OF_SF)
+
 		# theta
 		self.weiThetaL = Label(self,text="Estimated \u03B8: ")
-		self.weiThetaE = CustomEntry(self,width=10, justify="right")
-		
+		self.weiThetaE = NumericEntry(self,width=10, justify="right")
+		self.weiThetaE.setSF(NUMBER_OF_SF)
 
 
 		self.components = {

@@ -1,9 +1,9 @@
 from textwrap import dedent
 import numpy as np
 import matplotlib.pyplot as plt
-from desktop import settings
 from core.isopach import Isopach
 from core.models import exponential, weibull, power_law
+from desktop import settings
 
 
 class ModelSettings(object):
@@ -177,15 +177,3 @@ def create_results_plot(title, results, model_settings):
     plt.title(title)
     plt.savefig('test_{}.png'.format(model_settings.model))
 
-
-if __name__ == '__main__':
-    isopachs = load_isopachs('test_isopachs.csv')
-    model_settings = ModelSettings()
-    for model in ['exponential', 'power_law', 'weibull'][2:]:
-        model_settings.set_model(model)
-        results = fit_isopachs(isopachs, model_settings)
-        title = model_settings.model
-        create_results_plot(title, results, model_settings)
-        print(model_settings.get_as_text())
-        print(results['estimatedTotalVolume'])
-        print(results)

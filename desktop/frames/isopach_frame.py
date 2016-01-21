@@ -167,6 +167,8 @@ class IsopachFrame(LabelFrame):
         try:
             for index, line in enumerate(file):
                 try:
+                    if line.startswith('#'):
+                        continue  # Skip comment lines that store other data
                     thicknessM, sqrtAreaKM = line.split(',')
                     line = line.replace(" ","")
                     isopachs.append(Isopach(float(thicknessM), float(sqrtAreaKM)))

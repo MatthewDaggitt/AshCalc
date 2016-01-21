@@ -103,8 +103,11 @@ if __name__ == '__main__':
     model_settings = cli.ModelSettings()
     set_model_settings_from_arguments(model_settings, args)
     for filename in args.filelist:
-        isopachs = cli.load_isopachs(filename)
+        isopachs, comments = cli.read_isopachs_file(filename)
         results = cli.fit_isopachs(isopachs, model_settings)
+        print('---')
         print('Filename: {}'.format(filename))
+        for comment in comments:
+            print(comment)
         print(model_settings.get_as_text())
         print('Volume: {:.2f}'.format(results['estimatedTotalVolume']))

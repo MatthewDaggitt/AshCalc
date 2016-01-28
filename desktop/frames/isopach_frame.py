@@ -1,6 +1,9 @@
+import os
 import tkinter
 from tkinter.ttk import LabelFrame, Button, Frame, Scrollbar, Label, Entry, Checkbutton
+from tkinter import messagebox
 
+from core import isopach_file
 from core.isopach import Isopach
 
 from desktop import helper_functions
@@ -155,31 +158,13 @@ class IsopachFrame(LabelFrame):
         if fileName is None or fileName == "":
             return;
         
-        try:
-            file = open(fileName, "r")
-        except FileNotFoundError:
+        if not os.path.isfile(fileName):
             messagebox.showerror("Could not find file:\n\n\\t\"" + fileName.replace("\n","") + "\"")
             return
-        
-        isopachs = []
-        success = True
-        
+       
         try:
-            for index, line in enumerate(file):
-                try:
-                    if line.startswith('#'):
-                        continue  # Skip comment lines that store other data
-                    thicknessM, sqrtAreaKM = line.split(',')
-                    line = line.replace(" ","")
-                    isopachs.append(Isopach(float(thicknessM), float(sqrtAreaKM)))
-                except (ValueError, UnicodeDecodeError):
-                    messagebox.showerror("File format error", "Line " + str(index+1) + " of the file \n\n\t\"" + 
-                                         line.replace("\n","") + "\"\n\nis not in the format of 'thickness (M),\u221Aarea (KM)'")
-                    success = False
-                    break
-        except:
-            messagebox.showerror("File format error", "The file\n\n" + fileName + "\n\nis not in the format of 'thickness (M),\u221Aarea (KM)'")
-            success = False
-            
-        if success:
+            isopachs, comments = isopach_file.read(fileName)
             self.loadData(isopachs)
+        except (ValueError, UnicodeDecodeError):
+            messagebox.showerror("File format error",
+                                 "The file\n\n" + fileName + "\n\nis not in the format of 'thickness (M),\u221Aarea (KM)'")

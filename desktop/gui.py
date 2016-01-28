@@ -14,7 +14,7 @@ np.seterr(all="ignore")
 
 from core.isopach import Isopach
 
-from desktop.settings import Model
+from settings import Model
 from desktop import helper_functions
 from desktop.thread_handlers import ThreadHandler
 from desktop.timing_module import createWeibullTimingEstimationFunction

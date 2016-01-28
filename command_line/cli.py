@@ -1,9 +1,96 @@
+# -- coding: utf-8 --
+import argparse
 from textwrap import dedent
 import numpy as np
 import matplotlib.pyplot as plt
 from core.isopach import Isopach
 from core.models import exponential, weibull, power_law
-from desktop import settings
+import settings
+
+
+def setup_parser():
+    parser = argparse.ArgumentParser(
+            description='Calculate tephra volumes from isopach data using '
+                        'exponential, power law or Weibull models.')
+    parser.add_argument(
+            '--model', type=str, default='exponential',
+            choices=['exponential', 'power_law', 'weibull'],
+            help='Model used to fit root-area vs thickness curve.')
+    # It is possible to set defaults for all the values here, but this is not
+    # done as it is preferable to get them from the settings file.
+    parser.add_argument(
+            'filelist', type=str, nargs='*', default=None, metavar='filename',
+            help='CSV file containing thickness versus square root area data.')
+    parser.add_argument('--segments', type=int,
+            help='Number of segments to fit.  Used with exponential model.')
+    parser.add_argument('--proximal_limit', type=float,
+            help='Proximal limit of integration.  Used with power_law model')
+    parser.add_argument('--distal_limit', type=float,
+            help='Distal limit of integration.  Used with power_law model')
+    parser.add_argument('--runs', type=int,
+            help='Number of runs.  Used with weibull model')
+    parser.add_argument('--iterations_per_run', type=int,
+            help='Number of iterations per run.  Used with weibull model')
+    parser.add_argument('--lambda_lower', type=float,
+            help='Lambda parameter lower bound.  Used with weibull model')
+    parser.add_argument('--lambda_upper', type=float,
+            help='Lambda parameter upper bound.  Used with weibull model')
+    parser.add_argument('--k_lower', type=float,
+            help='k parameter lower bound.  Used with weibull model')
+    parser.add_argument('--k_upper', type=float,
+            help='k parameter upper bound.  Used with weibull model')
+    return parser
+
+
+def set_model_settings_from_arguments(model_settings, args):
+    """
+    Use command line arguments to set model parameters.  If no parameters are
+    given, use defaults.  If all are given for model, use all.  If some are
+    given, return an error.
+    """
+    model_settings.set_model(args.model)
+
+    if args.model == 'exponential':
+        if args.segments is None:
+            return
+        else:
+            model_settings.set_exponential_parameters(args.segments)
+    elif args.model == 'power_law':
+        arglist = [args.proximal_limit, args.distal_limit]
+        if all_are_none(arglist):
+            return
+        elif none_are_none(arglist):
+            model_settings.set_power_law_parameters(args.proximal_limit,
+                                                    args.distal_limit)
+        else:
+            raise ValueError(
+                    'Bad parameters.  Set all parameters or set none.')
+    elif args.model == 'weibull':
+        arglist = [args.runs, args.iterations_per_run, args.lambda_lower,
+                   args.lambda_upper, args.k_lower, args.k_upper,
+                   args.proximal_limit, args.distal_limit]
+        if all_are_none(arglist):
+            return
+        elif none_are_none(arglist):
+            model_settings.set_weibull_parameters(args.proximal_limit,
+                                                  args.distal_limit)
+        else:
+            raise ValueError(
+                    'Bad parameters.  Set all parameters or set none.')
+
+
+def none_are_none(arglist):
+    for arg in arglist:
+        if arg is None:
+            return False
+    return True
+
+
+def all_are_none(arglist):
+    for arg in arglist:
+        if arg is not None:
+            return False
+    return True
 
 
 class ModelSettings(object):
@@ -134,26 +221,6 @@ def fit_isopachs(isopachs, model_settings):
     return results
 
 
-def read_isopachs_file(filename):
-    """
-    Read a list of isopachs from comma separated text file, with columns of
-    thickness in metres, square root area in kilometres.  Additional comments,
-    beginning with #, are also returned.
-
-    :return list of Isopach objects:
-    """
-    isopachs = []
-    comments = []
-    with open(filename, 'r') as f:
-        for line in f:
-            if line.startswith('#'):
-                comments.append(line[1:].strip())
-            else:
-                thicknessM, sqrtAreaKM = line.split(',')
-                isopachs.append(Isopach(float(thicknessM), float(sqrtAreaKM)))
-    return isopachs, comments
-
-
 def create_results_plot(title, results, model_settings):
     """
     Plot log thickness versus square root area plot, with results and
@@ -182,3 +249,16 @@ def create_results_plot(title, results, model_settings):
     plt.title(title)
     plt.savefig('test_{}.png'.format(model_settings.model))
 
+
+def print_output(filename, results, model_settings, comments):
+    """
+    Format output and print to screen.
+    """
+    print('---')
+    print('Filename: {}'.format(filename))
+
+    for comment in comments:
+        print(comment)
+
+    print(model_settings.get_as_text())
+    print('Volume: {:.2f}'.format(results['estimatedTotalVolume']))

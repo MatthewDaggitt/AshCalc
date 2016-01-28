@@ -11,7 +11,7 @@ from core.models.exponential import exponentialModelAnalysis
 from core.models.power_law import powerLawModelAnalysis
 from core.models.weibull import weibullModelAnalysis
 
-from desktop.settings import Model
+from settings import Model
 
 
 class ThreadHandler():

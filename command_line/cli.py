@@ -273,11 +273,44 @@ def print_output(filename, results, model_settings, comments):
     """
     Format output and print to screen.
     """
-    print('---')
     print('Filename: {}'.format(filename))
 
     for comment in comments:
         print('Comment: {}'.format(comment))
 
     print(model_settings.get_as_text())
-    print('Volume: {:.2f}'.format(results['estimatedTotalVolume']))
+    print(format_results_by_model(results, model_settings.model))
+
+
+def format_results_by_model(results, model):
+    """
+    Format results dictionary to print different calculated model parameters,
+    depending on model used.
+
+    :return Multiline string of model parameter name: values.
+    """
+    text = ''
+    if model == 'exponential':
+        for i in range(results['numberOfSegments']):
+            text += 'Segment {} Bt: {:.3f}\n'.format(
+                    i, results['segmentBts'][i])
+            text += 'Segment {} Coefficient: {:.3f}\n'.format(
+                    i, results['segmentCoefficients'][i])
+            text += 'Segment {} Exponent: {:.3f}\n'.format(
+                    i, results['segmentExponents'][i])
+            text += 'Segment {} Limit: {:.3f}\n'.format(
+                    i, results['segmentLimits'][i + 1])
+            text += 'Segment {} Volume: {:.1f}\n'.format(
+                    i, results['segmentVolumes'][i])
+    elif model == 'power_law':
+        text += 'Coefficient: {:.3f}\n'.format(results['coefficient'])
+        text += 'Exponent: {:.3f}\n'.format(results['exponent'])
+        text += 'Suggested Proximal Limit: {:.1f}\n'.format(
+                results['suggestedProximalLimit'])
+    elif model == 'weibull':
+        text += 'k: {:.3f}\n'.format(results['k'])
+        text += 'lambda: {:.0f}\n'.format(results['lambda'])
+        text += 'theta: {:.5f}\n'.format(results['theta'])
+
+    text += 'Total Volume: {:.2f}\n'.format(results['estimatedTotalVolume'])
+    return text

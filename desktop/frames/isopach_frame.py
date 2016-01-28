@@ -3,7 +3,7 @@ import tkinter
 from tkinter.ttk import LabelFrame, Button, Frame, Scrollbar, Label, Entry, Checkbutton
 from tkinter import messagebox
 
-from core import isopach_file
+from core import isopach
 from core.isopach import Isopach
 
 from desktop import helper_functions
@@ -163,7 +163,7 @@ class IsopachFrame(LabelFrame):
             return
        
         try:
-            isopachs, comments = isopach_file.read(fileName)
+            isopachs, comments = isopach.read_file(fileName)
             self.loadData(isopachs)
         except (ValueError, UnicodeDecodeError):
             messagebox.showerror("File format error",

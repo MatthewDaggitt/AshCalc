@@ -1,5 +1,5 @@
 import sys
-from core import isopach_file
+from core import isopach
 from command_line import cli
 
 if __name__ == '__main__':
@@ -17,6 +17,6 @@ if __name__ == '__main__':
     model_settings = cli.ModelSettings()
     cli.set_model_settings_from_arguments(model_settings, args)
     for filename in args.filelist:
-        isopachs, comments = isopach_file.read(filename)
+        isopachs, comments = isopach.read_file(filename)
         results = cli.fit_isopachs(isopachs, model_settings)
         cli.print_output(filename, results, model_settings, comments)

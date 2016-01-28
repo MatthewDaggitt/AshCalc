@@ -221,7 +221,7 @@ def fit_isopachs(isopachs, model_settings):
     return results
 
 
-def create_results_plot(title, results, model_settings):
+def create_results_plot(filename, results, model_settings, comments):
     """
     Plot log thickness versus square root area plot, with results and
     regression lines included.

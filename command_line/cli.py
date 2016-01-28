@@ -39,6 +39,8 @@ def setup_parser():
             help='k parameter lower bound.  Used with weibull model')
     parser.add_argument('--k_upper', type=float,
             help='k parameter upper bound.  Used with weibull model')
+    parser.add_argument('--plot', action='store_true',
+            help='Plot the results as *filename_model.png*')
     return parser
 
 
@@ -221,7 +223,7 @@ def fit_isopachs(isopachs, model_settings):
     return results
 
 
-def create_results_plot(filename, results, model_settings, comments):
+def plot_results_figure(filename, results, model_settings, comments):
     """
     Plot log thickness versus square root area plot, with results and
     regression lines included.
@@ -235,19 +237,36 @@ def create_results_plot(filename, results, model_settings, comments):
     thickness = np.array([isopach.thicknessM
                           for isopach in results['isopachs']])
 
+    # Plot data
     fig = plt.figure()
     plt.semilogy(sqrt_area, thickness, 'x')
+
+    # Plot fitted curve
     xmin, xmax = plt.xlim()
-    area_values = np.linspace(xmin, xmax)
-    plt.plot(area_values, thickness_function(area_values))
+
+    if model_settings.model == 'power_law':
+        model_sqrt_area = np.linspace(model_settings.pow_proximal_limit,
+                                      model_settings.pow_distal_limit)
+        # Divide by root of pi (see power_law.pi for details)
+        model_sqrt_area = model_sqrt_area * np.sqrt(np.pi)
+    else:
+        model_sqrt_area = np.linspace(xmin, xmax)
+
+    model_thickness = [thickness_function(x) for x in model_sqrt_area]
+    plt.semilogy(model_sqrt_area, model_thickness, '-r')
+
+    # Label with axes, title and text model description
     plt.xlabel('Square root of area (km)')
     plt.ylabel('Thickness (m)')
+    title = '\n'.join(comments)
+    plt.title(title)
     ax = plt.gca()
     text = model_settings.get_as_text()
-    text += '\n\nVolume: {:.1f}'.format(volume)
+    text += '\n\nVolume: {:.1f} km3'.format(volume)
     plt.text(0.05, 0.05, text, transform=ax.transAxes)
-    plt.title(title)
-    plt.savefig('test_{}.png'.format(model_settings.model))
+
+    plt.savefig('{}_{}.png'.format(filename.replace('.csv', ''),
+                                   model_settings.model))
 
 
 def print_output(filename, results, model_settings, comments):
@@ -258,7 +277,7 @@ def print_output(filename, results, model_settings, comments):
     print('Filename: {}'.format(filename))
 
     for comment in comments:
-        print(comment)
+        print('Comment: {}'.format(comment))
 
     print(model_settings.get_as_text())
     print('Volume: {:.2f}'.format(results['estimatedTotalVolume']))

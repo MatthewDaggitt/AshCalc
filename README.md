@@ -17,7 +17,7 @@ consists of:
  * a command line interface
  * the python source code for the calculations, which is extensible and should be easy to integrate into other projects.
 
-![AshCalc graphical user interface](/images/gui.jpg?raw=true "Optional Title")
+![AshCalc graphical user interface](/images/gui.png?raw=true "Optional Title")
 
 For each model the outputs of AshCalc include:
 

@@ -163,7 +163,7 @@ class IsopachFrame(LabelFrame):
             return
        
         try:
-            isopachs, comments = isopach.read_file(fileName)
+            isopachs, comments = isopach.read_isopach_file(fileName)
             self.loadData(isopachs)
         except (ValueError, UnicodeDecodeError):
             messagebox.showerror("File format error",

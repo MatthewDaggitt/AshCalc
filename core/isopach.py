@@ -18,7 +18,7 @@ class Isopach(object):
     	return self.sqrtAreaKM/np.sqrt(np.pi)
 
 
-def read_file(filename):
+def read_isopach_file(filename):
     """
     Read a list of isopachs from comma separated text file, with columns of
     thickness in metres, square root area in kilometres.  Additional comments,

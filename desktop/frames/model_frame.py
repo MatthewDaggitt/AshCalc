@@ -2,10 +2,10 @@ import tkinter
 from tkinter.ttk import LabelFrame, Radiobutton, Separator, Label, Entry
 import numpy as np
 
-from desktop import settings
+import settings
 from desktop import helper_functions
 
-from desktop.settings import Model
+from settings import Model
 from desktop.custom_components import CustomEntry
 
 

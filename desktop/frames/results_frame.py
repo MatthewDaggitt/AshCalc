@@ -19,7 +19,7 @@ from core import regression_methods
 
 from desktop import helper_functions
 from desktop.custom_components import NumericEntry, CustomEntry, ImprovedNotebook, CutDownNavigationToolbar
-from desktop.settings import Model
+from settings import Model
 
 ###########Config###########
 

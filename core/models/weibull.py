@@ -8,6 +8,9 @@ import random
 import numpy as np
 from core import regression_methods
 
+# As sometimes the hill-climbing algorithm encounters very very small k values
+np.seterr(divide="ignore")
+
 def weibullModelAnalysis(isopachs,numberOfRuns,iterationsPerRun,limits):
 	"""
 	Analyses the isopach data under the assumption it follows a Weibull model

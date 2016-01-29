@@ -6,6 +6,7 @@ Created on 2 Jul 2013
 
 import random
 import numpy as np
+from core import regression_methods
 
 def weibullModelAnalysis(isopachs,numberOfRuns,iterationsPerRun,limits):
 	"""
@@ -39,22 +40,24 @@ def weibullModelAnalysis(isopachs,numberOfRuns,iterationsPerRun,limits):
 												 to zero it is the better the fit of the curve
 		dict["isopachs"]:list of Isopachs	--  list of Isopachs analysed
 		dict["limits"]:list of 2-tuples	  --  the limits for lambda and k used in calculations
-		
+
+		dict["mrse"]:float 					-- the mean relative squared error of the model
 	"""
 
-	sqrtAreaKM = np.array([isopach.sqrtAreaKM for isopach in isopachs])
-	thicknessM = np.array([isopach.thicknessM for isopach in isopachs])
+	sqrtAreasKM = np.array([isopach.sqrtAreaKM for isopach in isopachs])
+	thicknessesM = np.array([isopach.thicknessM for isopach in isopachs])
 
 	lamb, k, bestScore = _solveWeibullParameters(_logErrorFunction,
-												 sqrtAreaKM,
-												 thicknessM,
+												 sqrtAreasKM,
+												 thicknessesM,
 												 numberOfRuns,
 												 iterationsPerRun,
 												 *limits)
-	theta = calculateTheta(sqrtAreaKM,thicknessM,lamb,k)
+	theta = calculateTheta(sqrtAreasKM, thicknessesM, lamb,k)
 	
-	thicknessFunction = _createThicknessFunction(lamb,k,theta)
-	estimatedTotalVolumeKM3 = calculateWeibullVolume(lamb,k,theta)
+	thicknessFunction = _createThicknessFunction(lamb, k, theta)
+	estimatedTotalVolumeKM3 = calculateWeibullVolume(lamb, k, theta)
+	mrse = regression_methods.meanRelativeSquaredError(sqrtAreasKM, thicknessesM, thicknessFunction)
 
 	return {"estimatedTotalVolume" : estimatedTotalVolumeKM3,
 			"thicknessFunction" : thicknessFunction,
@@ -63,7 +66,8 @@ def weibullModelAnalysis(isopachs,numberOfRuns,iterationsPerRun,limits):
 			"theta" : theta,
 			"bestScore" : bestScore,
 			"isopachs" : isopachs,
-			"limits" : limits}
+			"limits" : limits,
+			"mrse" : mrse}
 	
 def calculateWeibullVolume(lamb,k,theta):
 	""" 

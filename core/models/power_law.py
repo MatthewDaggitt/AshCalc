@@ -34,10 +34,13 @@ def powerLawModelAnalysis(isopachs, proximalLimitKM, distalLimitKM):
         dict["proximalLimitKM"]:list of Isopachs    --  the proximal limit of integration used in calculations
         dict["distalLimitKM"]:list of Isopachs      --  the distal limit of integration used in calculations
         
+        dict["mrse"]:float                          -- the mean relative squared error of the model
     """
     
-    logThicknessesM = [np.log(isopach.thicknessM) for isopach in isopachs]
-    logSqrtAreaKM = [np.log(isopach.sqrtAreaKM) for isopach in isopachs]
+    thicknessesM = [isopach.thicknessM for isopach in isopachs]
+    sqrtAreasKM = [isopach.sqrtAreaKM for isopach in isopachs]
+    logThicknessesM = [np.log(t) for t in thicknessesM]
+    logSqrtAreaKM = [np.log(a) for a in sqrtAreasKM]
     
     proximalLimitSqrtAreaKM = proximalLimitKM*np.sqrt(np.pi)
     distalLimitSqrtAreaKM = distalLimitKM*np.sqrt(np.pi)
@@ -58,6 +61,8 @@ def powerLawModelAnalysis(isopachs, proximalLimitKM, distalLimitKM):
     else:
         suggestedProximalLimit = "N/A"
 
+    mrse = regression_methods.meanRelativeSquaredError(sqrtAreasKM, thicknessesM, thicknessFunction)
+
     return {"estimatedTotalVolume" : estimatedTotalVolume,
             "thicknessFunction" : thicknessFunction,
             "regressionLine" : regressionLine,
@@ -66,7 +71,8 @@ def powerLawModelAnalysis(isopachs, proximalLimitKM, distalLimitKM):
             "isopachs" : isopachs,
             "proximalLimitKM" : proximalLimitKM,
             "distalLimitKM" : distalLimitKM,
-            "suggestedProximalLimit" : suggestedProximalLimit}
+            "suggestedProximalLimit" : suggestedProximalLimit,
+            "mrse" : mrse}
   
 def calculatePowerLawVolume(coefficient,exponent,proximalLimitKM,distalLimitKM):
     """ 

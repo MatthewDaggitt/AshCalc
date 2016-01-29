@@ -38,12 +38,15 @@ def exponentialModelAnalysis(isopachs,n):
 														it's parameters.
 		dict["isopachs"]:list of Isopachs		   --  list of Isopachs analysed.
 		dict["numberOfSegments"]:int				--  number of exponential segments.
+
+		dict["mrse"]:float 							-- the mean relative squared error of the model
 	"""
 
+	thicknessesM = [isopach.thicknessM for isopach in isopachs]
 	logThickness = [np.log(isopach.thicknessM) for isopach in isopachs]
-	sqrtAreaKM = [isopach.sqrtAreaKM for isopach in isopachs]
+	sqrtAreasKM = [isopach.sqrtAreaKM for isopach in isopachs]
 
-	regressionLines, segmentLimits = regression_methods.calculateMultiLineRegression(sqrtAreaKM,logThickness,n)
+	regressionLines, segmentLimits = regression_methods.calculateMultiLineRegression(sqrtAreasKM,logThickness,n)
 
 	segmentT0s = [np.exp(line.c) for line in regressionLines]
 	segmentKs = [-line.m for line in regressionLines]
@@ -62,6 +65,8 @@ def exponentialModelAnalysis(isopachs,n):
 				return segmentT0s[i]*np.exp(-segmentKs[i]*x)
 		raise ValueError("x (" + str(x) + ") is not in the domain of the function (0 to infinity)")
 
+	mrse = regression_methods.meanRelativeSquaredError(sqrtAreasKM, thicknessesM, thicknessFunction)
+
 	return {"estimatedTotalVolume" : estimatedTotalVolume,
 			"thicknessFunction" : thicknessFunction,
 			"segmentLimits" : segmentLimits,
@@ -71,7 +76,8 @@ def exponentialModelAnalysis(isopachs,n):
 			"segmentBts" : segmentBts,
 			"regressionLines" : regressionLines,
 			"isopachs" : isopachs,
-			"numberOfSegments" : n}
+			"numberOfSegments" : n,
+			"mrse" : mrse}
 
 def calculateExponentialSegmentVolume(coefficient,exponent,startLimitKM,endLimitKM):
 	"""

@@ -38,10 +38,8 @@ def calculateMultiLineRegression(xs, ys, numberOfSegments):
     numberOfSegments -- the number of linear segments to fit to the data
     
     Returns
-    segmentLines:list   --  list of Line objects each representing a linear segment
-    segmentLimits:list  --  list of n+1 integers, segmentLines[i] is valid between 
-                            segmentLimits[i] and segmentLimits[i+1]
-    
+    segmentLines:list           --  list of Line objects each representing a linear segment
+    segmentLimits:list          --  list of n+1 integers, segmentLines[i] is valid between segmentLimits[i] and segmentLimits[i+1]
     """
     
     xs, ys = zip(*sorted(zip(xs,ys), key=lambda x: x[0]))
@@ -67,7 +65,7 @@ def calculateMultiLineRegression(xs, ys, numberOfSegments):
     segmentLines = [allLines[(x,y)] for (x,y) in minTraversal]
     segmentLimits = _calculateSegments(xs,ys,segmentLines,minTraversal)
     
-    return (segmentLines,segmentLimits)
+    return (segmentLines, segmentLimits)
 
 def _calculateSegments(xs,ys,lines,minTraversal):
     bounds = [xs[0]]

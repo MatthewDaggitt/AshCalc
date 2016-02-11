@@ -277,8 +277,8 @@ def print_output(filename, results, model_settings, comments):
     """
     print('Filename: {}'.format(filename))
 
-    for comment in comments:
-        print('Comment: {}'.format(comment))
+    for i, comment in enumerate(comments):
+        print('Comment {}: {}'.format(i + 1, comment))
 
     print(model_settings.get_as_text())
     print(format_results_by_model(results, model_settings.model))
@@ -314,5 +314,6 @@ def format_results_by_model(results, model):
         text += 'lambda: {:.0f}\n'.format(results['lambda'])
         text += 'theta: {:.5f}\n'.format(results['theta'])
 
+    text += 'MRSE of fit: {:.03f}\n'.format(results['mrse'])
     text += 'Total Volume: {:.2f}\n'.format(results['estimatedTotalVolume'])
     return text

@@ -69,13 +69,15 @@ def set_model_settings_from_arguments(model_settings, args):
                     'Bad parameters.  Set all parameters or set none.')
     elif args.model == 'weibull':
         arglist = [args.runs, args.iterations_per_run, args.lambda_lower,
-                   args.lambda_upper, args.k_lower, args.k_upper,
-                   args.proximal_limit, args.distal_limit]
+                   args.lambda_upper, args.k_lower, args.k_upper]
         if all_are_none(arglist):
             return
         elif none_are_none(arglist):
-            model_settings.set_weibull_parameters(args.proximal_limit,
-                                                  args.distal_limit)
+            model_settings.set_weibull_parameters(
+                    args.runs, args.iterations_per_run,
+                    ((args.lambda_lower, args.lambda_upper),
+                     (args.k_lower, args.k_upper)))
+                                                   
         else:
             raise ValueError(
                     'Bad parameters.  Set all parameters or set none.')

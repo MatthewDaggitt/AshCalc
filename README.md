@@ -1,23 +1,25 @@
 # AshCalc
 
-AshCalc is a series of python modules for calculating the three most common models for estimating the volume of tephra deposits:
+AshCalc is an easy-to-use tool that allows volcanologists to estimate the
+volume of an eruption from isopach data describing the tephra deposits.
+Volumes can be estimated using the exponential, power-law or Weibull models and
+the results and quality of the fit can be plotted and compared.  For full
+details, see the following (open access) paper:
 
- * the Exponential model
- * the Power law model
- * the Weibull model
- 
-Daggit, Mather, Pyle and Page have published a  [paper](http://www.appliedvolc.com/content/3/1/7) on AshCalc in the Journal of Applied Volconology describing it in further detail, as well as demonstrating that it accurately produces previously published results from publically available data.
+> Daggitt ML, Mather TA, Pyle DM, Page S (2014) _AshCalc–a new tool
+> for the comparison of the exponential, power-law and Weibull models
+> of tephra deposition._
+> Journal of Applied Volcanology 3:7. doi: [10.1186/2191-5040-3-7](http://www.appliedvolc.com/content/3/1/7)
 
-The aim of AshCalc is to be an easy-to-use tool distributed
-under an open source license for volcanologists to compare
-the suitability of the three models for their data. AshCalc
-consists of:
+AshCalc is distributed as a series of Python modules under the open source MIT
+license. The software includes:
  
  * a graphical user interface
  * a command line interface
- * the python source code for the calculations, which is extensible and should be easy to integrate into other projects.
+ * the Python source code for the calculations, which is extensible and should be easy to integrate into other projects.
 
-![AshCalc graphical user interface](/images/gui.png?raw=true "Optional Title")
+![AshCalc graphical user interface](images/gui.png?raw=true "AshCalc graphical
+interface")
 
 For each model the outputs of AshCalc include:
 
@@ -28,36 +30,61 @@ For each model the outputs of AshCalc include:
  * Regression parameters (Exponential and Power law models).
 
 
-
 ## Setting up AshCalc
 
-AshCalc can be installed by cloning the repository into a folder locally. 
+For detailed instructions, download the [AshCalc user
+manual](http://static-content.springer.com/esm/art%3A10.1186%2F2191-5040-3-7/MediaObjects/13617_2013_13_MOESM3_ESM.docx).
+
+AshCalc can be installed by downloading and unzipping onto a folder on your
+local machine.  Alternatively, _git_ users can simply clone the repository as follows:
 
 ```bash
 git clone https://github.com/MatthewDaggitt/AshCalc
 ```
-Two options exist to install the requirements. Either the required Python3 modules (numpy, scipy etc.) can be installed using "pip":
+
+AshCalc requires Python 3 and a number of additional packages (e.g. numpy).
+The extra packages can be added to an existing Python 3 installation using
+_pip_ by running the command below in the AshCalc directory:
 
 ```bash
 pip install -r requirements.txt
 ```
-Or you can download a full Python stack such as Anaconda. This may be a better alternative if on Windows.
 
-TO-DO A brief description of getting Anaconda up and running
+The recommended method for a new installation of Python 3 is to use the [Anaconda Python distribution](https://www.continuum.io/downloads).  This is a free software package that contains all the necessary tools to use Python for scientific data analysis.  It is available for Windows, Mac and Linux and includes options for creating 'virtual environments' that allow specific versions of Python packages to be used for different projects.  The [AshCalc user manual](http://static-content.springer.com/esm/art%3A10.1186%2F2191-5040-3-7/MediaObjects/13617_2013_13_MOESM3_ESM.docx) describes how to set this up.
 
 
 ## Running AshCalc
 
-After navigating to the AshCalc folder, the program can be run as follows from a terminal:
+AshCalc can be run by opening a terminal window in the AshCalc directory and
+entering the following:
 
 ```bash
 python3 ashcalc.py
 ```
 
-If no further arguments are passed to the program then the graphical user interface will start by default. Otherwise the command-line tool will process the arguments and provide output directly to the terminal.
+This will open the graphical user interface, which allows interactive tweaking
+of input parameters and visualisation of the output.  AshCalc also has
+a command line interface.  This is useful for automatic processing of multiple
+files.  Run the following to see instructions:
 
-TO-DO: Describe the workings of the command-line tool.
+```bash
+python3 ashcalc.py --help
+```
+
+The example command below will fit a 3-segment exponential model to all the
+_csv_ files in the directory and creates plots of the fit.
+
+```bash
+python3 ashcalc.py *.csv --plot --model exponential --segments 3
+```
+
+Results are printed to the terminal and can be captured using the redirect
+command.
+
+```bash
+python3 ashcalc.py *.csv > my_results.txt
+```
 
 ## The VHub version of AshCalc
 
-For those struggling to setup AshCalc, there is also a cut-down version of AshCalc available on [VHub](https://vhub.org/resources/ashcalc). It has the advantage that it requires no download or setup, but it won't plot error surfaces for the Weibull model and has much coarser-grained controls.
+A cut-down version of AshCalc is also installed on [VHub](https://vhub.org/resources/ashcalc). It requires no download or setup, but it won't plot error surfaces for the Weibull model and has much coarser-grained controls.

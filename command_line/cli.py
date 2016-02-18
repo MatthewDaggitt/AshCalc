@@ -1,46 +1,59 @@
 # -- coding: utf-8 --
 import argparse
+import json
 from textwrap import dedent
 import numpy as np
 import matplotlib.pyplot as plt
-from core.isopach import Isopach
 from core.models import exponential, weibull, power_law
 import settings
 
 
 def setup_parser():
     parser = argparse.ArgumentParser(
-            description='Calculate tephra volumes from isopach data using '
-                        'exponential, power law or Weibull models.')
+        description='Calculate tephra volumes from isopach data using '
+                    'exponential, power law or Weibull models.')
     parser.add_argument(
-            '--model', type=str, default='exponential',
-            choices=['exponential', 'power_law', 'weibull'],
-            help='Model used to fit root-area vs thickness curve.')
+        '--model', type=str, default='exponential',
+        choices=['exponential', 'power_law', 'weibull'],
+        help='Model used to fit root-area vs thickness curve.')
     # It is possible to set defaults for all the values here, but this is not
     # done as it is preferable to get them from the settings file.
     parser.add_argument(
-            'filelist', type=str, nargs='*', default=None, metavar='filename',
-            help='CSV file containing thickness versus square root area data.')
-    parser.add_argument('--segments', type=int,
-            help='Number of segments to fit.  Used with exponential model.')
-    parser.add_argument('--proximal_limit', type=float,
-            help='Proximal limit of integration.  Used with power_law model')
-    parser.add_argument('--distal_limit', type=float,
-            help='Distal limit of integration.  Used with power_law model')
-    parser.add_argument('--runs', type=int,
-            help='Number of runs.  Used with weibull model')
-    parser.add_argument('--iterations_per_run', type=int,
-            help='Number of iterations per run.  Used with weibull model')
-    parser.add_argument('--lambda_lower', type=float,
-            help='Lambda parameter lower bound.  Used with weibull model')
-    parser.add_argument('--lambda_upper', type=float,
-            help='Lambda parameter upper bound.  Used with weibull model')
-    parser.add_argument('--k_lower', type=float,
-            help='k parameter lower bound.  Used with weibull model')
-    parser.add_argument('--k_upper', type=float,
-            help='k parameter upper bound.  Used with weibull model')
-    parser.add_argument('--plot', action='store_true',
-            help='Plot the results as *filename_model.png*')
+        'filelist', type=str, nargs='*', default=None, metavar='filename',
+        help='CSV file containing thickness versus square root area data.')
+    parser.add_argument(
+        '--segments', type=int,
+        help='Number of segments to fit.  Used with exponential model.')
+    parser.add_argument(
+        '--proximal_limit', type=float,
+        help='Proximal limit of integration.  Used with power_law model')
+    parser.add_argument(
+        '--distal_limit', type=float,
+        help='Distal limit of integration.  Used with power_law model')
+    parser.add_argument(
+        '--runs', type=int,
+        help='Number of runs.  Used with weibull model')
+    parser.add_argument(
+        '--iterations_per_run', type=int,
+        help='Number of iterations per run.  Used with weibull model')
+    parser.add_argument(
+        '--lambda_lower', type=float,
+        help='Lambda parameter lower bound.  Used with weibull model')
+    parser.add_argument(
+        '--lambda_upper', type=float,
+        help='Lambda parameter upper bound.  Used with weibull model')
+    parser.add_argument(
+        '--k_lower', type=float,
+        help='k parameter lower bound.  Used with weibull model')
+    parser.add_argument(
+        '--k_upper', type=float,
+        help='k parameter upper bound.  Used with weibull model')
+    parser.add_argument(
+        '--plot', action='store_true',
+        help='Plot the results as *filename_model.png*')
+    parser.add_argument(
+        '--json', action='store_true',
+        help='Print the results formatted as json')
     return parser
 
 
@@ -66,19 +79,21 @@ def set_model_settings_from_arguments(model_settings, args):
                                                     args.distal_limit)
         else:
             raise ValueError(
-                    'Bad parameters.  Set all parameters or set none.')
+                'Bad parameters.  Set all parameters or set none.')
     elif args.model == 'weibull':
         arglist = [args.runs, args.iterations_per_run, args.lambda_lower,
-                   args.lambda_upper, args.k_lower, args.k_upper,
-                   args.proximal_limit, args.distal_limit]
+                   args.lambda_upper, args.k_lower, args.k_upper]
         if all_are_none(arglist):
             return
         elif none_are_none(arglist):
-            model_settings.set_weibull_parameters(args.proximal_limit,
-                                                  args.distal_limit)
+            model_settings.set_weibull_parameters(
+                args.runs, args.iterations_per_run,
+                ((args.lambda_lower, args.lambda_upper),
+                 (args.k_lower, args.k_upper)))
+
         else:
             raise ValueError(
-                    'Bad parameters.  Set all parameters or set none.')
+                'Bad parameters.  Set all parameters or set none.')
 
 
 def none_are_none(arglist):
@@ -206,6 +221,39 @@ class ModelSettings(object):
                                            self.wei_k_upper_bound)
         return dedent(text)
 
+    def get_as_dict(self):
+        """
+        Return model settings as a dictionary.
+        """
+        settings = {'model': self.model,
+                    'exp_segments': self.exp_segments,
+                    'exp_max_segments': self.exp_max_segments,
+                    'pow_proximal_limit': self.pow_proximal_limit,
+                    'pow_distal_limit': self.pow_distal_limit,
+                    'wei_number_of_runs': self.wei_number_of_runs,
+                    'wei_iterations_per_run': self.wei_iterations_per_run,
+                    'wei_lambda_lower_bound': self.wei_lambda_lower_bound,
+                    'wei_lambda_upper_bound': self.wei_lambda_upper_bound,
+                    'wei_k_lower_bound': self.wei_k_lower_bound,
+                    'wei_k_upper_bound': self.wei_k_upper_bound}
+        settings_used_by_models = {'exponential': ['exp_segments',
+                                                   'exp_max_segments'],
+                                   'power_law': ['pow_proximal_limit',
+                                                 'pow_distal_limit'],
+                                   'weibull': ['wei_lambda_upper_bound',
+                                               'wei_lambda_upper_bound',
+                                               'wei_k_upper_bound',
+                                               'wei_k_upper_bound']}
+
+        # Drop unused settings
+        settings_used = settings_used_by_models[self.model]
+        all_settings = settings.keys()
+        settings_to_drop = [s for s in all_settings if s not in settings_used]
+        for setting in settings_to_drop:
+            settings.pop(setting)
+
+        return settings
+
 
 def fit_isopachs(isopachs, model_settings):
     """
@@ -232,7 +280,7 @@ def plot_results_figure(filename, results, model_settings, comments):
     """
     volume = results['estimatedTotalVolume']
     thickness_function = results['thicknessFunction']
-    sqrt_area = np.array([isopach.sqrtAreaKM 
+    sqrt_area = np.array([isopach.sqrtAreaKM
                           for isopach in results['isopachs']])
     thickness = np.array([isopach.thicknessM
                           for isopach in results['isopachs']])
@@ -275,11 +323,29 @@ def print_output(filename, results, model_settings, comments):
     """
     print('Filename: {}'.format(filename))
 
-    for comment in comments:
-        print('Comment: {}'.format(comment))
+    for i, comment in enumerate(comments):
+        print('Comment {}: {}'.format(i + 1, comment))
 
     print(model_settings.get_as_text())
     print(format_results_by_model(results, model_settings.model))
+
+
+def print_json_output(filename, results, model_settings, comments):
+    """
+    Format output as json and print to screen.
+    """
+    all_results = results.copy()
+
+    # Remove results that do not serialize to json
+    for key in ['isopachs', 'thicknessFunction']:
+        all_results.pop(key)
+
+    all_results.update({'filename': filename,
+                        'comments': comments})
+    all_results.update(model_settings.get_as_dict())
+
+    print(json.dumps(all_results, sort_keys=True, indent=4,
+          separators=(',', ': ')))
 
 
 def format_results_by_model(results, model):
@@ -312,5 +378,6 @@ def format_results_by_model(results, model):
         text += 'lambda: {:.0f}\n'.format(results['lambda'])
         text += 'theta: {:.5f}\n'.format(results['theta'])
 
+    text += 'MRSE of fit: {:.03f}\n'.format(results['mrse'])
     text += 'Total Volume: {:.2f}\n'.format(results['estimatedTotalVolume'])
     return text

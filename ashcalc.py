@@ -20,7 +20,10 @@ if __name__ == '__main__':
     for filename in args.filelist:
         isopachs, comments = isopach.read_isopach_file(filename)
         results = cli.fit_isopachs(isopachs, model_settings)
-        cli.print_output(filename, results, model_settings, comments)
+        if args.json:
+            cli.print_json_output(filename, results, model_settings, comments)
+        else:
+            cli.print_output(filename, results, model_settings, comments)
         if args.plot:
             cli.plot_results_figure(filename, results, model_settings,
                                     comments)

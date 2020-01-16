@@ -1,26 +1,26 @@
 import tkinter
 from tkinter.ttk import Entry, Notebook, Frame, Scrollbar
-from matplotlib.backends.backend_tkagg import NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
 from desktop import helper_functions
 
-class CutDownNavigationToolbar(NavigationToolbar2TkAgg):
+class CutDownNavigationToolbar(NavigationToolbar2Tk):
 	# only display the buttons needed
-	toolitems = [t for t in NavigationToolbar2TkAgg.toolitems if t[0] in ("Home", "Pan", "Save")]
-	
+	toolitems = [t for t in NavigationToolbar2Tk.toolitems if t[0] in ("Home", "Pan", "Save")]
+
 	# Get ride of mode text
 	def pan(self):
-	    NavigationToolbar2TkAgg.pan(self)
+	    NavigationToolbar2Tk.pan(self)
 	    self.mode = ""
 	    self.set_message(self.mode)
 
 	def zoom(self):
-	    NavigationToolbar2TkAgg.zoom(self)
+	    NavigationToolbar2Tk.zoom(self)
 	    self.mode = ""
 	    self.set_message(self.mode)
 
 class CustomEntry(Entry):
-	
+
 	def __init__(self,*args,**kwargs):
 		Entry.__init__(self,*args,**kwargs)
 		self.userEditable = True
@@ -28,7 +28,7 @@ class CustomEntry(Entry):
 	def setUserEditable(self,userEditable):
 		self.userEditable = userEditable
 		self.config(state=(tkinter.ACTIVE if userEditable else tkinter.DISABLED))
-		
+
 	def insertNew(self,text):
 		if not self.userEditable:
 			self.config(state="normal")
@@ -58,25 +58,25 @@ class NumericEntry(CustomEntry):
 			return value
 
 class ImprovedNotebook(Notebook):
-	
+
 	def __init__(self,*args,**kwargs):
 		Notebook.__init__(self,*args,**kwargs)
 		self.currentFrames = set()
-		
+
 	def addFrame(self,frame,text):
 		if frame not in self.currentFrames:
 			self.add(frame,text=text)
 			self.currentFrames.add(frame)
-		
+
 	def removeFrame(self,frame):
 		if frame in self.currentFrames:
 			self.forget(frame)
 			self.currentFrames.remove(frame)
 
 class ScrollFrame(Frame):
-	
+
 	def __init__(self,parent):
-		
+
 		Frame.__init__(self, master=parent)
 
 		canvas = tkinter.Canvas(self, highlightthickness=0)
@@ -108,4 +108,3 @@ class ScrollFrame(Frame):
 
 		#canvas.bind("<Configure>", lambda e : canvas.itemconfig(frameID, width=e.width))
 		canvas.bind("<Configure>", lambda e : canvas.configure(width=self.innerFrame.winfo_width()))
-		

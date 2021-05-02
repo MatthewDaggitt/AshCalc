@@ -61,3 +61,7 @@ tags
 
 # Plots
 *.png
+
+#Pycharm
+.idea/
+venv/

@@ -88,7 +88,7 @@ jobs:
       - name: Build with pyinstaller
         shell: bash
         run: |
-          pyinstaller --onefile --hidden-import='pkg_resources.py2_warn' --add-data ashcalc.py
+          pyinstaller --onefile --hidden-import='pkg_resources.py2_warn' ashcalc.py
       # --icon=./resources/icon.ico
       - name: Upload release asset
         id: upload-release-asset

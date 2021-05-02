@@ -1,22 +1,18 @@
 import math
+import tkinter
 from copy import deepcopy
+from tkinter import messagebox
+from tkinter.ttk import Frame, LabelFrame, Label, Button, Combobox, Separator
 
 import numpy as np
-
-import tkinter
-from tkinter.ttk import Frame, LabelFrame, Label, Button, Combobox, Separator, Notebook
-
-import matplotlib
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg as FigureCanvas, NavigationToolbar2Tk as NavigationToolbar
 from matplotlib import pyplot
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg as FigureCanvas
 from mpl_toolkits.mplot3d import Axes3D
 
-from core.isopach import Isopach
+from core import regression_methods
 from core.models.exponential import calculateExponentialSegmentVolume
 from core.models.power_law import calculatePowerLawVolume
 from core.models.weibull import calculateWeibullVolume, calculateTheta
-from core import regression_methods
-
 from desktop import helper_functions
 from desktop.custom_components import NumericEntry, CustomEntry, ImprovedNotebook, CutDownNavigationToolbar
 from settings import Model
@@ -857,7 +853,8 @@ class GraphFrame(Frame):
 						rowL.append(v)
 				except FloatingPointError:
 					rowL.append(np.nan)
-			Z.append(rowL)
+			Z.append(np.array(rowL))
+		Z = np.array(Z)
 
 		maxZ = max([max([r for r in row if not np.isnan(r)]) for row in Z])
 		minZ = min([min([r for r in row if not np.isnan(r)]) for row in Z])

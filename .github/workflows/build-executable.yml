@@ -45,19 +45,19 @@ jobs:
         include:
           - os: macos-latest
             OS_NAME: macOS
-            PYTHON_VERSION: 3.6.12
+            PYTHON_VERSION: 3.6.x
             EXTENSION:
             RESOURCES: resources:resources
 
           - os: ubuntu-latest
             OS_NAME: ubuntu
-            PYTHON_VERSION: 3.6.12
+            PYTHON_VERSION: 3.6.x
             EXTENSION:
             RESOURCES: resources:resources
 
           - os: windows-latest
             OS_NAME: windows
-            PYTHON_VERSION: 3.6.8
+            PYTHON_VERSION: 3.6.x
             EXTENSION: .exe
             RESOURCES: resources;resources
 
@@ -103,8 +103,8 @@ jobs:
       - name: Build with pyinstaller
         shell: bash
         run: |
-          pyinstaller --onefile --hidden-import='pkg_resources.py2_warn' --add-data '${{ matrix.RESOURCES }}'
-      # --icon=./resources/icon.ico src/UPb_Unmixer.py
+          pyinstaller --onefile --hidden-import='pkg_resources.py2_warn' --add-data '${{ matrix.RESOURCES }}' ashcalc.py
+      # --icon=./resources/icon.ico
       - name: Upload release asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1.0.1

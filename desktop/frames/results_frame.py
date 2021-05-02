@@ -46,11 +46,6 @@ class ResultsFrame(LabelFrame):
 
 		LabelFrame.__init__(self, parent,text="Results", width=825, height=485)
 
-		# Terrible kludgy hack to force the app to stay the right size
-		# Need to work out how to remove
-		self.grid_propagate(False)
-
-
 		self.resultsDict = None
 		self.modelType = None
 		self.currentSegment = 0
@@ -818,7 +813,8 @@ class GraphFrame(Frame):
 		if dim == 2:
 			self.axes = self.figure.add_subplot(1,1,1)
 		elif dim == 3:
-			self.axes = Axes3D(self.figure)
+			self.axes = Axes3D(self.figure, auto_add_to_figure=False)
+			self.figure.add_axes(self.axes)
 		else:
 			raise ValueError("Dimension must be either 2 or 3")
 

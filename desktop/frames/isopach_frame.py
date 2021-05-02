@@ -27,14 +27,10 @@ class IsopachFrame(LabelFrame):
         LabelFrame.__init__(self,parent,text="Isopachs",borderwidth=5)
         self.numberOfIsopachs = DEFAULT_NUMBER_OF_ISOPACHS
         self.calculationTimeEstimationFunction = calculationTimeEstimationFunction
-        
-        openButtonImage = tkinter.PhotoImage(file=IMAGE_DIR + "open_file-icon.gif")
-        self.tickImage = tkinter.PhotoImage(file=IMAGE_DIR + "tick.gif")
-        
-        self.loadFromFileButton = Button(self,image=openButtonImage)
+
+        self.loadFromFileButton = Button(self,text="Load from file")
         self.loadFromFileButton.grid(row=0,column=0,padx=self.buttonPadding,pady=10)
         self.loadFromFileButton.bind("<Button-1>",self.loadFromFile)
-        self.loadFromFileButton.image = openButtonImage
         
         self.addButton = Button(self,text="Add isopach",width=self.buttonWidth)
         self.addButton.grid(row=0,column=1,padx=self.buttonPadding,pady=10)
@@ -72,7 +68,7 @@ class IsopachFrame(LabelFrame):
         sqrtAreaKM_E.grid(column=2, row=rowNumber+2, pady=5)
 
         includeVar = tkinter.IntVar()
-        includeCB = tkinter.Checkbutton(self.innerFrame,variable=includeVar, selectimage=self.tickImage)
+        includeCB = tkinter.Checkbutton(self.innerFrame,variable=includeVar)
         includeCB.grid(column=3,row=rowNumber+2,pady=5)
         includeCB.invoke()
         includeCB.bind("<Leave>",self.calculationTimeEstimationFunction)

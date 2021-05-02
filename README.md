@@ -32,6 +32,12 @@ For each model the outputs of AshCalc include:
 
 ## Setting up AshCalc
 
+### Executables
+
+Executables for Windows and Ubuntu are available from the [Releases](https://github.com/MatthewDaggitt/AshCalc/releases) page.
+
+### Running from source
+
 For detailed instructions, download the [AshCalc user
 manual](http://static-content.springer.com/esm/art%3A10.1186%2F2191-5040-3-7/MediaObjects/13617_2013_13_MOESM3_ESM.docx).
 
